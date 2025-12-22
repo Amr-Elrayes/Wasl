@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "142679403934",
+    "project_id": "wasl-79d6c",
+    "storage_bucket": "wasl-79d6c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:142679403934:android:08d2620213160ebf047a8f",
+        "android_client_info": {
+          "package_name": "com.amrelrayes.wasl"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9kSU6bLxIMncXAN7oWGumLS1A6iyeLcI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
