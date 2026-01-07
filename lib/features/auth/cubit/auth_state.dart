@@ -5,7 +5,8 @@ class AuthInitialState extends AuthState {}
 class AuthLoadingState extends AuthState {}
 
 class AuthSuccessState extends AuthState {
-  AuthSuccessState();
+  AuthSuccessState({this.role});
+  String? role;
 }
 
 class AuthFailureState extends AuthState {

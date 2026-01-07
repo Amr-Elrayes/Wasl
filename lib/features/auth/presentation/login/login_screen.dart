@@ -5,15 +5,19 @@ import 'package:gap/gap.dart';
 import 'package:wasl/components/buttons/custom_buttom.dart';
 import 'package:wasl/components/inputs/custom_text_field.dart';
 import 'package:wasl/components/inputs/password_text_field.dart';
+import 'package:wasl/core/functions/showloadingdialog.dart';
+import 'package:wasl/core/functions/snackbar.dart';
 import 'package:wasl/core/routes/navigation.dart';
+import 'package:wasl/core/routes/routes.dart';
 import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/core/utils/text_styles.dart';
 import 'package:wasl/features/auth/cubit/auth_cubit.dart';
+import 'package:wasl/features/auth/cubit/auth_state.dart';
 import 'package:wasl/features/auth/presentation/widgets/bottom_text.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,19 +45,26 @@ class LoginScreen extends StatelessWidget {
 
   Widget _buildloginbody(BuildContext context) {
     var cubit = context.read<AuthCubit>();
-    // return BlocListener<AuthCubit, AuthState>(
-    //   listener: (context, state) {
-    //     if (state is AuthLoadingState) {
-    //       showloadingDialog(context);
-    //     } else if (state is AuthSucessState) {
-    //       log("Success");
-    //       pushAndRemoveUntil(context, Routes.main);
-    //     } else {
-    //       pop(context);
-    //       showSnakBar(context, AppColors.redColor, "Field");
-    //     }
-    //   },
-    return Padding(
+    return BlocListener<AuthCubit, AuthState>(
+          listener: (context, state) {
+                        if (state is AuthLoadingState) {
+              showloadingDialog(context);
+            } else if (state is AuthSuccessState) {
+              pop(context);
+              if(state.role == "Career") 
+              {
+                pushAndRemoveUntil(context, Routes.Bmain);
+              }
+              else
+              {
+                pushAndRemoveUntil(context, Routes.Cmain);
+              }
+            } else if (state is AuthFailureState) {
+              Navigator.pop(context);
+              showSnakBar(context, Colors.red, state.errorMessage);
+            }
+          },
+    child:  Padding(
       padding: const EdgeInsets.all(22),
       child: Form(
         key: cubit.formKey,
@@ -120,6 +131,7 @@ class LoginScreen extends StatelessWidget {
           ],
         ),
       ),
+    )
     );
   }
 }

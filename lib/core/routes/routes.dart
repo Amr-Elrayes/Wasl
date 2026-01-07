@@ -7,10 +7,11 @@ import 'package:wasl/features/auth/presentation/complete_profile/builder_complet
 import 'package:wasl/features/auth/presentation/complete_profile/company_complete_profile_screen.dart';
 import 'package:wasl/features/auth/presentation/login/login_screen.dart';
 import 'package:wasl/features/auth/presentation/register/register_screen.dart';
+import 'package:wasl/features/career/main/career_builder_main_screen.dart';
+import 'package:wasl/features/company/main/company_main_screen.dart';
 import 'package:wasl/features/intro/onboarding/onboarding_screen.dart';
 import 'package:wasl/features/intro/splash/splash_screen.dart';
 import 'package:wasl/features/intro/welcome/welcome_screen.dart';
-
 
 class Routes {
   static String splah = "/";
@@ -28,7 +29,7 @@ class Routes {
       GoRoute(path: splah, builder: (context, state) => const SplashScreen()),
       GoRoute(
         path: onboarding,
-        builder: (context, state) =>  OnboardingScreen(),
+        builder: (context, state) => OnboardingScreen(),
       ),
       GoRoute(
         path: welcome,
@@ -38,7 +39,7 @@ class Routes {
         path: login,
         builder: (context, state) => BlocProvider(
           create: (context) => AuthCubit(),
-          child:const LoginScreen(),
+          child: const LoginScreen(),
         ),
       ),
       GoRoute(
@@ -62,7 +63,18 @@ class Routes {
           child: const CompanyCompleteProfile(),
         ),
       ),
-      
+      GoRoute(
+        path: Bmain,
+        builder: (context, state) {
+          return const CareerBuilderMainScreen();
+        },
+      ),
+      GoRoute(
+        path: Cmain,
+        builder: (context, state) {
+          return const CompanyMainScreen();
+        },
+      ),
     ],
   );
 }
