@@ -19,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
     //   bool seen = SharedPref.isOnboardingSeen();
     //   User? user = FirebaseAuth.instance.currentUser;
     Future.delayed(Duration(seconds: 3), () {
-      pushReplacment(context, Routes.onboarding);
+      pushReplacment(context, Routes.BuilderCompleteProfileScreen);
     });
     //     if (user != null) {
     //       if (user.photoURL == "doctor") {

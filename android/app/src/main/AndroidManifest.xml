@@ -1,5 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.CAMERA" />
+
+<!-- For Android 13+ -->
+<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+<!-- For Android 12 and below -->
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    android:maxSdkVersion="32" />
+
     <application
+    
         android:label="wasl"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
@@ -30,6 +40,16 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+            <provider
+    android:name="androidx.core.content.FileProvider"
+    android:authorities="${applicationId}.provider"
+    android:exported="false"
+    android:grantUriPermissions="true">
+    <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/file_paths" />
+</provider>
+
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

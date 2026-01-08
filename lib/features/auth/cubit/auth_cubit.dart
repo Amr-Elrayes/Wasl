@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +16,9 @@ class AuthCubit extends Cubit<AuthState> {
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
   var confirmpasswordController = TextEditingController();
+  var jobTitleController = TextEditingController();
+  var summaryController = TextEditingController();
+  File? pickedImage; 
   usertype? selectedUserType;
 
   register({required usertype type}) async {
@@ -108,5 +113,15 @@ class AuthCubit extends Cubit<AuthState> {
       }
     }
     return null;
+  }
+
+  updateCareerBuilderData()
+  async{
+    emit(AuthLoadingState());
+    var careerBuilder = CareerBuilderModel(
+      uid: FirebaseAuth.instance.currentUser?.uid,
+      jobTitle: jobTitleController.text,
+      summary: summaryController.text
+    );
   }
 }

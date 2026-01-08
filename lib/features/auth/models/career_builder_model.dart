@@ -54,4 +54,14 @@ class CareerBuilderModel {
     data['workExperiences'] = workExperiences;
     return data;
       }
+
+
+        Map<String, dynamic> updateData() => {
+    if (name != null) 'name': name,
+    if (email != null) 'email': email,
+    if (image != null) 'image': image,
+    if (jobTitle != null) 'jobTitle': jobTitle,
+    if (summary != null) 'summary': summary,
+    if (uid != null) 'uid': uid,
+  };
 }

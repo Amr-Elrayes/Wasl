@@ -56,9 +56,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           } else if (state is AuthSuccessState) {
             pop(context);
             if (selectedUserType == usertype.Career) {
-              pushReplacment(context, Routes.BuilderCompleteProfileScreen);
+              pushAndRemoveUntil(context, Routes.BuilderCompleteProfileScreen);
             } else {
-              pushReplacment(context, Routes.CompanyCompleteProfileScreen);
+              pushAndRemoveUntil(context, Routes.CompanyCompleteProfileScreen);
             }
           } else if (state is AuthFailureState) {
             Navigator.pop(context);
