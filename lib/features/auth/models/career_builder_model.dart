@@ -7,61 +7,66 @@ class CareerBuilderModel {
   final String? image;
   final String? jobTitle;
   final String? summary;
-  final List<ListTileItemModel>? workExperiences;
-  final List<ListTileItemModel>? education;
-  final List<ListTileItemModel>? certificates;
-  final List<String>? skills;
+  List<ListTileItemModel>? workExperiences = [];
+  List<ListTileItemModel>? education = [];
+  List<ListTileItemModel>? certificates = [];
+  List<String>? skills = [];
 
   CareerBuilderModel(
-      { this.uid,
-        this.name,
-        this.email,
-        this.image,
-        this.jobTitle,
-        this.summary,
-        this.workExperiences,
-        this.education,
-        this.certificates,
-        this.skills});
+      {this.uid,
+      this.name,
+      this.email,
+      this.image,
+      this.jobTitle,
+      this.summary,
+      this.workExperiences,
+      this.education,
+      this.certificates,
+      this.skills});
 
-  factory CareerBuilderModel.fromJson(Map<String, dynamic> json) {
+factory CareerBuilderModel.fromJson(Map<String, dynamic> json) {
+  return CareerBuilderModel(
+    uid: json['uid'],
+    name: json['name'],
+    email: json['email'],
+    image: json['image'],
+    jobTitle: json['jobTitle'],
+    summary: json['summary'],
+    skills: List<String>.from(json['skills'] ?? []),
+    workExperiences: (json['workExperiences'] as List<dynamic>? ?? [])
+        .map((e) => ListTileItemModel.fromJson(e))
+        .toList(),
+    education: (json['education'] as List<dynamic>? ?? [])
+        .map((e) => ListTileItemModel.fromJson(e))
+        .toList(),
+    certificates: (json['certificates'] as List<dynamic>? ?? [])
+        .map((e) => ListTileItemModel.fromJson(e))
+        .toList(),
+  );
+}
 
-    return CareerBuilderModel(
-      uid: json['uid'],
-      name: json['name'],
-      image: json['image'],
-      email: json['email'],
-      certificates: json['certificates'],
-      education: json['education'],
-      jobTitle: json['jobTitle'],
-      skills: json['skills'],
-      summary: json['summary'],
-      workExperiences: json['workExperiences']
-    );
+
+  Map<String, dynamic> toJson() {
+    return {
+      'uid': uid,
+      'name': name,
+      'email': email,
+      'image': image,
+      'jobTitle': jobTitle,
+      'summary': summary,
+      'skills': skills,
+      'certificates': certificates?.map((e) => e.toJson()).toList(),
+      'education': education?.map((e) => e.toJson()).toList(),
+      'workExperiences': workExperiences?.map((e) => e.toJson()).toList(),
+    };
   }
 
-  Map<String, dynamic> toJson(){
-    final Map<String, dynamic> data = <String , dynamic>{};
-    data['uid'] = uid;
-    data['name'] = name; 
-    data['skills'] = skills;
-    data['image'] = image;
-    data['email'] = email;
-    data['certificates'] = certificates;
-    data['education'] = education;
-    data['summary'] = summary;
-    data['jobTitle'] = jobTitle;
-    data['workExperiences'] = workExperiences;
-    return data;
-      }
-
-
-        Map<String, dynamic> updateData() => {
-    if (name != null) 'name': name,
-    if (email != null) 'email': email,
-    if (image != null) 'image': image,
-    if (jobTitle != null) 'jobTitle': jobTitle,
-    if (summary != null) 'summary': summary,
-    if (uid != null) 'uid': uid,
-  };
+  Map<String, dynamic> updateData() => {
+        if (name != null) 'name': name,
+        if (email != null) 'email': email,
+        if (image != null) 'image': image,
+        if (jobTitle != null) 'jobTitle': jobTitle,
+        if (summary != null) 'summary': summary,
+        if (uid != null) 'uid': uid,
+      };
 }

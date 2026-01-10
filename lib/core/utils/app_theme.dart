@@ -21,19 +21,19 @@ class AppTheme {
         inputDecorationTheme: InputDecorationTheme(
           hintStyle: TextStyles.textSize15.copyWith(color: AppColors.grayColor),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(22),
-            borderSide: BorderSide(color: AppColors.jobCardColor, width: 1),
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(22),
-            borderSide: BorderSide(color: AppColors.jobCardColor, width: 1),
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
           ),
           errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide(color: AppColors.redColor, width: 1),
           ),
           focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide(color: AppColors.redColor, width: 1),
           ),
         ),

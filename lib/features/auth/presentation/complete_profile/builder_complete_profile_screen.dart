@@ -6,12 +6,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wasl/components/buttons/custom_buttom.dart';
+import 'package:wasl/components/inputs/custom_text_field.dart';
 import 'package:wasl/core/constants/app_icons.dart';
 import 'package:wasl/core/constants/app_images.dart';
 import 'package:wasl/core/routes/navigation.dart';
 import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/core/utils/text_styles.dart';
 import 'package:wasl/features/auth/cubit/auth_cubit.dart';
+import 'package:wasl/features/auth/models/listtile_item_model.dart';
+import 'package:wasl/features/auth/presentation/complete_profile/widgets/expansion_tile_item.dart';
+import 'package:wasl/features/auth/presentation/complete_profile/widgets/expansion_tile_widget.dart';
 
 class BuilderCompleteProfile extends StatefulWidget {
   const BuilderCompleteProfile({super.key});
@@ -22,6 +26,10 @@ class BuilderCompleteProfile extends StatefulWidget {
 
 class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
   File? imagePath;
+  List<ListTileItemModel> workExperiences = [];
+  List<ListTileItemModel> skills = [];
+  List<ListTileItemModel> certificates = [];
+  List<ListTileItemModel> education = [];
   @override
   Widget build(BuildContext context) {
     var cubit = context.read<AuthCubit>();
@@ -116,7 +124,45 @@ class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
                       ],
                     ),
                   ),
-                )
+                ),
+                Gap(15),
+                Text(
+                  "Job Title",
+                  style: TextStyles.textSize15
+                      .copyWith(fontWeight: FontWeight.w500),
+                ),
+                Gap(5),
+                customTextformfield(
+                  controller: cubit.jobTitleController,
+                  hintText: "ex : UI/UX Designer",
+                ),
+                Gap(15),
+                Text(
+                  "Summary",
+                  style: TextStyles.textSize15
+                      .copyWith(fontWeight: FontWeight.w500),
+                ),
+                Gap(5),
+                customTextformfield(
+                  controller: cubit.summaryController,
+                  hintText: "Enter Your Summary ",
+                  maxlines: 4,
+                ),
+                Gap(15),
+                ExpansionTileWidget(
+                  title: "Work Experience",
+                  onExpansionChanged: (isOpen) async {
+                    if (isOpen && workExperiences.isEmpty) {
+                      workExperiences = await cubit.getListFromProfile(
+                        fieldName: "workExperiences",
+                      );
+                      setState(() {});
+                    }
+                  },
+                  children: workExperiences.map((item) {
+                    return ExpansionTileItem(model: item);
+                  }).toList(),
+                ),
               ],
             ),
           ),

@@ -8,6 +8,7 @@ import 'package:wasl/core/constants/user_type_enum.dart';
 import 'package:wasl/features/auth/cubit/auth_state.dart';
 import 'package:wasl/features/auth/models/career_builder_model.dart';
 import 'package:wasl/features/auth/models/company_model.dart';
+import 'package:wasl/features/auth/models/listtile_item_model.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthInitialState());
@@ -18,7 +19,11 @@ class AuthCubit extends Cubit<AuthState> {
   var confirmpasswordController = TextEditingController();
   var jobTitleController = TextEditingController();
   var summaryController = TextEditingController();
-  File? pickedImage; 
+  var tileNameController = TextEditingController();
+  var locationController = TextEditingController();
+  var startDateController = TextEditingController();
+  var endDateController = TextEditingController();
+  File? pickedImage;
   usertype? selectedUserType;
 
   register({required usertype type}) async {
@@ -35,7 +40,11 @@ class AuthCubit extends Cubit<AuthState> {
         var career = CareerBuilderModel(
             uid: user?.uid,
             name: nameController.text,
-            email: emailController.text);
+            email: emailController.text,
+            certificates: [],
+            education: [],
+            workExperiences: [],
+            skills: []);
         await FirebaseFirestore.instance
             .collection("Career")
             .doc(user?.uid)
@@ -115,13 +124,33 @@ class AuthCubit extends Cubit<AuthState> {
     return null;
   }
 
-  updateCareerBuilderData()
-  async{
+  Future<List<ListTileItemModel>> getListFromProfile({
+    required String fieldName,
+  }) async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+
+    final doc =
+        await FirebaseFirestore.instance.collection('Career').doc(uid).get();
+
+    final list = doc.data()?[fieldName] ?? [];
+
+    return List<ListTileItemModel>.from(
+      list.map((e) => ListTileItemModel.fromJson(e)),
+    );
+  }
+
+  updateCareerBuilderData() async {
     emit(AuthLoadingState());
+    String imgUrl = '';
     var careerBuilder = CareerBuilderModel(
       uid: FirebaseAuth.instance.currentUser?.uid,
       jobTitle: jobTitleController.text,
-      summary: summaryController.text
+      summary: summaryController.text,
+      image: imgUrl,
     );
+    await FirebaseFirestore.instance
+        .collection("Career")
+        .doc(careerBuilder.uid)
+        .update(careerBuilder.updateData());
   }
 }
