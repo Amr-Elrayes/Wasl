@@ -29,6 +29,7 @@ class customTextformfield extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       keyboardType: keyboardType,
       textAlign: textAlign,
       readOnly: readonly,

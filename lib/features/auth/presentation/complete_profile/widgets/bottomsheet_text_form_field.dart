@@ -21,6 +21,7 @@ class bottomsheet_text_form_field extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textField = TextFormField(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         validator: validator,
         controller: controller,
         enabled: !isDateField,
@@ -55,6 +56,9 @@ class bottomsheet_text_form_field extends StatelessWidget {
               color: AppColors.redColor,
               width: 2,
             ),
+          ),
+          focusedErrorBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: AppColors.redColor, width: 2),
           ),
         ));
 

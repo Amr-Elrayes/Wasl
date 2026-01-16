@@ -14,6 +14,7 @@ import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/core/utils/text_styles.dart';
 import 'package:wasl/features/auth/cubit/auth_cubit.dart';
 import 'package:wasl/features/auth/cubit/auth_state.dart';
+import 'package:wasl/features/auth/models/listtile_item_model.dart';
 import 'package:wasl/features/auth/presentation/complete_profile/widgets/expansion_tile_item.dart';
 import 'package:wasl/features/auth/presentation/complete_profile/widgets/expansion_tile_widget.dart';
 
@@ -26,6 +27,11 @@ class BuilderCompleteProfile extends StatefulWidget {
 
 class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
   File? imagePath;
+  List<ListTileItemModel> workExperiences = [];
+  List<ListTileItemModel> education = [];
+  List<ListTileItemModel> certificates = [];
+  List<ListTileItemModel> skills = [];
+
   @override
   Widget build(BuildContext context) {
     var cubit = context.read<AuthCubit>();
@@ -149,9 +155,13 @@ class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
                   builder: (context, state) {
                     return ExpansionTileWidget(
                       title: "Work Experience",
-                      children: cubit.workExperiences
-                          .map((item) => ExpansionTileItem(model: item))
-                          .toList(),
+                      items: workExperiences,
+                      onAdd: (item) {
+                        setState(() => workExperiences.add(item));
+                      },
+                      onDelete: (index) {
+                        setState(() => workExperiences.removeAt(index));
+                      },
                     );
                   },
                 ),
@@ -160,9 +170,13 @@ class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
                   builder: (context, state) {
                     return ExpansionTileWidget(
                       title: "Education",
-                      children: cubit.education
-                          .map((item) => ExpansionTileItem(model: item))
-                          .toList(),
+                      items: education,
+                      onAdd: (item) {
+                        setState(() => education.add(item));
+                      },
+                      onDelete: (index) {
+                        setState(() => education.removeAt(index));
+                      },
                     );
                   },
                 ),
@@ -171,9 +185,13 @@ class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
                   builder: (context, state) {
                     return ExpansionTileWidget(
                       title: "Certificates",
-                      children: cubit.certificates
-                          .map((item) => ExpansionTileItem(model: item))
-                          .toList(),
+                      items: certificates,
+                      onAdd: (item) {
+                        setState(() => certificates.add(item));
+                      },
+                      onDelete: (index) {
+                        setState(() => certificates.removeAt(index));
+                      },
                     );
                   },
                 ),
@@ -182,9 +200,13 @@ class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
                   builder: (context, state) {
                     return ExpansionTileWidget(
                       title: "Skills",
-                      children: cubit.skills
-                          .map((item) => ExpansionTileItem(model: item))
-                          .toList(),
+                      items: skills,
+                      onAdd: (item) {
+                        setState(() => skills.add(item));
+                      },
+                      onDelete: (index) {
+                        setState(() => skills.removeAt(index));
+                      },
                     );
                   },
                 ),

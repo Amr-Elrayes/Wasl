@@ -4,6 +4,7 @@ import 'package:wasl/components/buttons/custom_buttom.dart';
 import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/core/utils/text_styles.dart';
 import 'package:wasl/features/auth/cubit/auth_cubit.dart';
+import 'package:wasl/features/auth/models/listtile_item_model.dart';
 import 'package:wasl/features/auth/presentation/complete_profile/widgets/bottomsheet_text_form_field.dart';
 import 'package:wasl/features/auth/presentation/complete_profile/widgets/expansion_tile_widget.dart';
 
@@ -79,10 +80,11 @@ class _skills_bottom_sheet_contentState
               txt: "Add",
               onPressed: () {
                 if (!_formKey.currentState!.validate()) return;
-                widget.cubit.addListItem(
-                  section: widget.widget.title,
-                  name: skillController.text,
-                );
+widget.widget.onAdd(
+  ListTileItemModel(
+    name: skillController.text,
+  ),
+);
                 Navigator.pop(context);
               },
             )

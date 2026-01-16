@@ -32,6 +32,7 @@ class _customTextformfieldState extends State<PasswordTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       obscureText: obsecureText,
       readOnly: widget.readonly,
       onTap: widget.ontap,

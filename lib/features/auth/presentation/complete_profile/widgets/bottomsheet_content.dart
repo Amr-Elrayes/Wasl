@@ -5,6 +5,7 @@ import 'package:wasl/core/functions/date_picker.dart';
 import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/core/utils/text_styles.dart';
 import 'package:wasl/features/auth/cubit/auth_cubit.dart';
+import 'package:wasl/features/auth/models/listtile_item_model.dart';
 import 'package:wasl/features/auth/presentation/complete_profile/widgets/bottomsheet_text_form_field.dart';
 import 'package:wasl/features/auth/presentation/complete_profile/widgets/expansion_tile_widget.dart';
 
@@ -143,13 +144,14 @@ class _bottomsheet_contentState extends State<bottomsheet_content> {
               txt: "Add",
               onPressed: () {
                 if (!_formKey.currentState!.validate()) return;
-                widget.cubit.addListItem(
-                  section: widget.widget.title,
-                  name: roleController.text,
-                  location: locationController.text,
-                  startDate: startDateController.text,
-                  endDate: endDateController.text,
-                );
+widget.widget.onAdd(
+  ListTileItemModel(
+    name: roleController.text,
+    location: locationController.text,
+    startDate: startDateController.text,
+    endDate: endDateController.text,
+  ),
+);
                 Navigator.pop(context);
               },
             )
