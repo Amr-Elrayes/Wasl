@@ -13,22 +13,23 @@ class ExpansionTileItem extends StatelessWidget {
       children: [
         Text(
           model.name,
-          style: TextStyles.textSize15.copyWith(fontWeight: FontWeight.bold),
+          style: TextStyles.textSize15
+              .copyWith(fontWeight: FontWeight.bold, fontSize: 12),
         ),
         Gap(5),
         Row(
           children: [
             Text(
-              model.location ?? "  ",
-              style: TextStyles.textSize15,
+              model.location ?? "",
+              style: TextStyles.textSize15.copyWith(fontSize: 12),
             ),
             Text(
-              " | ",
-              style: TextStyles.textSize15,
+              model.location==null ? "" : " | ",
+              style: TextStyles.textSize15.copyWith(fontSize: 12),
             ),
             Text(
               model.dateRange,
-              style: TextStyles.textSize15,
+              style: TextStyles.textSize15.copyWith(fontSize: 12),
             )
           ],
         )

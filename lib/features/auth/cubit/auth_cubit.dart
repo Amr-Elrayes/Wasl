@@ -19,10 +19,11 @@ class AuthCubit extends Cubit<AuthState> {
   var confirmpasswordController = TextEditingController();
   var jobTitleController = TextEditingController();
   var summaryController = TextEditingController();
-  var tileNameController = TextEditingController();
-  var locationController = TextEditingController();
-  var startDateController = TextEditingController();
-  var endDateController = TextEditingController();
+  var skillController = TextEditingController();
+  List<ListTileItemModel> workExperiences = [];
+  List<ListTileItemModel> education = [];
+  List<ListTileItemModel> certificates = [];
+  List<ListTileItemModel> skills = [];
   File? pickedImage;
   usertype? selectedUserType;
 
@@ -38,13 +39,10 @@ class AuthCubit extends Cubit<AuthState> {
       await user?.updateDisplayName(nameController.text);
       if (type.toString().split('.').last == "Career") {
         var career = CareerBuilderModel(
-            uid: user?.uid,
-            name: nameController.text,
-            email: emailController.text,
-            certificates: [],
-            education: [],
-            workExperiences: [],
-            skills: []);
+          uid: user?.uid,
+          name: nameController.text,
+          email: emailController.text,
+        );
         await FirebaseFirestore.instance
             .collection("Career")
             .doc(user?.uid)
@@ -152,5 +150,37 @@ class AuthCubit extends Cubit<AuthState> {
         .collection("Career")
         .doc(careerBuilder.uid)
         .update(careerBuilder.updateData());
+  }
+
+  void addListItem({
+    required String section,
+    required String name,
+    String? location,
+    String? startDate,
+    String? endDate,
+  }) {
+    final item = ListTileItemModel(
+      name: name.trim(),
+      location: location?.trim(),
+      startDate: startDate?.trim(),
+      endDate: endDate?.trim(),
+    );
+
+    switch (section) {
+      case "Work Experience":
+        workExperiences.add(item);
+        break;
+      case "Education":
+        education.add(item);
+        break;
+      case "Certificates":
+        certificates.add(item);
+        break;
+      case "Skills":
+        skills.add(item);
+        break;
+    }
+
+    emit(LocalListUpdatedState());
   }
 }

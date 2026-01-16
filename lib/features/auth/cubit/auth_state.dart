@@ -13,3 +13,5 @@ class AuthFailureState extends AuthState {
   final String errorMessage;
   AuthFailureState(this.errorMessage);
 }
+
+class LocalListUpdatedState extends AuthState {}

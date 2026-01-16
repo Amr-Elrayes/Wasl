@@ -7,10 +7,10 @@ class CareerBuilderModel {
   final String? image;
   final String? jobTitle;
   final String? summary;
-  List<ListTileItemModel>? workExperiences = [];
-  List<ListTileItemModel>? education = [];
-  List<ListTileItemModel>? certificates = [];
-  List<String>? skills = [];
+  List<ListTileItemModel>? workExperiences;
+  List<ListTileItemModel>? education;
+  List<ListTileItemModel>? certificates;
+  List<ListTileItemModel>? skills;
 
   CareerBuilderModel(
       {this.uid,
@@ -24,27 +24,28 @@ class CareerBuilderModel {
       this.certificates,
       this.skills});
 
-factory CareerBuilderModel.fromJson(Map<String, dynamic> json) {
-  return CareerBuilderModel(
-    uid: json['uid'],
-    name: json['name'],
-    email: json['email'],
-    image: json['image'],
-    jobTitle: json['jobTitle'],
-    summary: json['summary'],
-    skills: List<String>.from(json['skills'] ?? []),
-    workExperiences: (json['workExperiences'] as List<dynamic>? ?? [])
-        .map((e) => ListTileItemModel.fromJson(e))
-        .toList(),
-    education: (json['education'] as List<dynamic>? ?? [])
-        .map((e) => ListTileItemModel.fromJson(e))
-        .toList(),
-    certificates: (json['certificates'] as List<dynamic>? ?? [])
-        .map((e) => ListTileItemModel.fromJson(e))
-        .toList(),
-  );
-}
-
+  factory CareerBuilderModel.fromJson(Map<String, dynamic> json) {
+    return CareerBuilderModel(
+      uid: json['uid'],
+      name: json['name'],
+      email: json['email'],
+      image: json['image'],
+      jobTitle: json['jobTitle'],
+      summary: json['summary'],
+      skills: (json['skills'] as List<dynamic>? ?? [])
+          .map((e) => ListTileItemModel.fromJson(e))
+          .toList(),
+      workExperiences: (json['workExperiences'] as List<dynamic>? ?? [])
+          .map((e) => ListTileItemModel.fromJson(e))
+          .toList(),
+      education: (json['education'] as List<dynamic>? ?? [])
+          .map((e) => ListTileItemModel.fromJson(e))
+          .toList(),
+      certificates: (json['certificates'] as List<dynamic>? ?? [])
+          .map((e) => ListTileItemModel.fromJson(e))
+          .toList(),
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -54,7 +55,7 @@ factory CareerBuilderModel.fromJson(Map<String, dynamic> json) {
       'image': image,
       'jobTitle': jobTitle,
       'summary': summary,
-      'skills': skills,
+      'skills': skills?.map((e) => e.toJson()).toList(),
       'certificates': certificates?.map((e) => e.toJson()).toList(),
       'education': education?.map((e) => e.toJson()).toList(),
       'workExperiences': workExperiences?.map((e) => e.toJson()).toList(),

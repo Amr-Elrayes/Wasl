@@ -13,7 +13,7 @@ import 'package:wasl/core/routes/navigation.dart';
 import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/core/utils/text_styles.dart';
 import 'package:wasl/features/auth/cubit/auth_cubit.dart';
-import 'package:wasl/features/auth/models/listtile_item_model.dart';
+import 'package:wasl/features/auth/cubit/auth_state.dart';
 import 'package:wasl/features/auth/presentation/complete_profile/widgets/expansion_tile_item.dart';
 import 'package:wasl/features/auth/presentation/complete_profile/widgets/expansion_tile_widget.dart';
 
@@ -26,10 +26,6 @@ class BuilderCompleteProfile extends StatefulWidget {
 
 class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
   File? imagePath;
-  List<ListTileItemModel> workExperiences = [];
-  List<ListTileItemModel> skills = [];
-  List<ListTileItemModel> certificates = [];
-  List<ListTileItemModel> education = [];
   @override
   Widget build(BuildContext context) {
     var cubit = context.read<AuthCubit>();
@@ -149,19 +145,48 @@ class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
                   maxlines: 4,
                 ),
                 Gap(15),
-                ExpansionTileWidget(
-                  title: "Work Experience",
-                  onExpansionChanged: (isOpen) async {
-                    if (isOpen && workExperiences.isEmpty) {
-                      workExperiences = await cubit.getListFromProfile(
-                        fieldName: "workExperiences",
-                      );
-                      setState(() {});
-                    }
+                BlocBuilder<AuthCubit, AuthState>(
+                  builder: (context, state) {
+                    return ExpansionTileWidget(
+                      title: "Work Experience",
+                      children: cubit.workExperiences
+                          .map((item) => ExpansionTileItem(model: item))
+                          .toList(),
+                    );
                   },
-                  children: workExperiences.map((item) {
-                    return ExpansionTileItem(model: item);
-                  }).toList(),
+                ),
+                Gap(15),
+                BlocBuilder<AuthCubit, AuthState>(
+                  builder: (context, state) {
+                    return ExpansionTileWidget(
+                      title: "Education",
+                      children: cubit.education
+                          .map((item) => ExpansionTileItem(model: item))
+                          .toList(),
+                    );
+                  },
+                ),
+                Gap(15),
+                BlocBuilder<AuthCubit, AuthState>(
+                  builder: (context, state) {
+                    return ExpansionTileWidget(
+                      title: "Certificates",
+                      children: cubit.certificates
+                          .map((item) => ExpansionTileItem(model: item))
+                          .toList(),
+                    );
+                  },
+                ),
+                Gap(15),
+                BlocBuilder<AuthCubit, AuthState>(
+                  builder: (context, state) {
+                    return ExpansionTileWidget(
+                      title: "Skills",
+                      children: cubit.skills
+                          .map((item) => ExpansionTileItem(model: item))
+                          .toList(),
+                    );
+                  },
                 ),
               ],
             ),
