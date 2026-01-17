@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wasl/core/constants/user_type_enum.dart';
+import 'package:wasl/core/functions/upload_image.dart';
 import 'package:wasl/features/auth/cubit/auth_state.dart';
 import 'package:wasl/features/auth/models/career_builder_model.dart';
 import 'package:wasl/features/auth/models/company_model.dart';
@@ -24,7 +25,6 @@ class AuthCubit extends Cubit<AuthState> {
   List<ListTileItemModel> education = [];
   List<ListTileItemModel> certificates = [];
   List<ListTileItemModel> skills = [];
-  File? pickedImage;
   usertype? selectedUserType;
 
   register({required usertype type}) async {
@@ -137,19 +137,35 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  updateCareerBuilderData() async {
+  updateCareerBuilderData(File? pickedImage) async {
     emit(AuthLoadingState());
-    String imgUrl = '';
-    var careerBuilder = CareerBuilderModel(
-      uid: FirebaseAuth.instance.currentUser?.uid,
-      jobTitle: jobTitleController.text,
-      summary: summaryController.text,
-      image: imgUrl,
-    );
-    await FirebaseFirestore.instance
-        .collection("Career")
-        .doc(careerBuilder.uid)
-        .update(careerBuilder.updateData());
+    try {
+      if (pickedImage == null) {
+        emit(AuthFailureState("No image selected"));
+        return;
+      }
+      String? imgUrl = await updateImageToCloudinary(pickedImage);
+      if (imgUrl == null) {
+        emit(AuthFailureState("Uplad Image Fails , try Again"));
+        return;
+      }
+      var careerBuilder = CareerBuilderModel(
+          uid: FirebaseAuth.instance.currentUser?.uid,
+          jobTitle: jobTitleController.text,
+          summary: summaryController.text,
+          image: imgUrl,
+          workExperiences: workExperiences,
+          education: education,
+          certificates: certificates,
+          skills: skills);
+      await FirebaseFirestore.instance
+          .collection("Career")
+          .doc(careerBuilder.uid)
+          .update(careerBuilder.updateData());
+      emit(AuthSuccessState());
+    } on Exception catch (_) {
+      emit(AuthFailureState("There is an Error , try again later"));
+    }
   }
 
   void addListItem({

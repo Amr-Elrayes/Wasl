@@ -62,12 +62,25 @@ class CareerBuilderModel {
     };
   }
 
-  Map<String, dynamic> updateData() => {
-        if (name != null) 'name': name,
-        if (email != null) 'email': email,
-        if (image != null) 'image': image,
-        if (jobTitle != null) 'jobTitle': jobTitle,
-        if (summary != null) 'summary': summary,
-        if (uid != null) 'uid': uid,
-      };
+Map<String, dynamic> updateData() => {
+  if (name != null) 'name': name,
+  if (email != null) 'email': email,
+  if (image != null) 'image': image,
+  if (jobTitle != null) 'jobTitle': jobTitle,
+  if (summary != null) 'summary': summary,
+  if (uid != null) 'uid': uid,
+
+  if (workExperiences != null)
+    'workExperiences': workExperiences!.map((e) => e.toJson()).toList(),
+
+  if (education != null)
+    'education': education!.map((e) => e.toJson()).toList(),
+
+  if (certificates != null)
+    'certificates': certificates!.map((e) => e.toJson()).toList(),
+
+  if (skills != null)
+    'skills': skills!.map((e) => e.toJson()).toList(),
+};
+
 }
