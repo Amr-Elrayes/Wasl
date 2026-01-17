@@ -21,6 +21,8 @@ class AuthCubit extends Cubit<AuthState> {
   var jobTitleController = TextEditingController();
   var summaryController = TextEditingController();
   var skillController = TextEditingController();
+  var fieldController = TextEditingController();
+  var bioController = TextEditingController();
   List<ListTileItemModel> workExperiences = [];
   List<ListTileItemModel> education = [];
   List<ListTileItemModel> certificates = [];
@@ -137,7 +139,7 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  updateCareerBuilderData(File? pickedImage) async {
+  updateData(File? pickedImage , usertype user) async {
     emit(AuthLoadingState());
     try {
       if (pickedImage == null) {
@@ -149,7 +151,9 @@ class AuthCubit extends Cubit<AuthState> {
         emit(AuthFailureState("Uplad Image Fails , try Again"));
         return;
       }
-      var careerBuilder = CareerBuilderModel(
+      if(user == usertype.Career)
+      {
+              var careerBuilder = CareerBuilderModel(
           uid: FirebaseAuth.instance.currentUser?.uid,
           jobTitle: jobTitleController.text,
           summary: summaryController.text,
@@ -163,6 +167,21 @@ class AuthCubit extends Cubit<AuthState> {
           .doc(careerBuilder.uid)
           .update(careerBuilder.updateData());
       emit(AuthSuccessState());
+      }
+      else
+      {
+              var Company = CompanyModel(
+          uid: FirebaseAuth.instance.currentUser?.uid,
+          image: imgUrl,
+          bio: bioController.text,
+          field: fieldController.text);
+      await FirebaseFirestore.instance
+          .collection("Company")
+          .doc(Company.uid)
+          .update(Company.updateData());
+      emit(AuthSuccessState());
+      }
+
     } on Exception catch (_) {
       emit(AuthFailureState("There is an Error , try again later"));
     }

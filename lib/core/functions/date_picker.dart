@@ -10,7 +10,7 @@ Future<void> pickMonthYearWithDatePicker(
     useRootNavigator: true,
     initialDate: DateTime.now(),
     firstDate: DateTime(2000),
-    lastDate: DateTime(2100),
+    lastDate: DateTime.now(),
     initialDatePickerMode: DatePickerMode.year,
   );
 

@@ -9,7 +9,7 @@ import 'package:wasl/components/buttons/custom_buttom.dart';
 import 'package:wasl/components/inputs/custom_text_field.dart';
 import 'package:wasl/core/constants/app_icons.dart';
 import 'package:wasl/core/constants/app_images.dart';
-import 'package:wasl/core/functions/show_alert_dialog.dart';
+import 'package:wasl/core/constants/user_type_enum.dart';
 import 'package:wasl/core/functions/showloadingdialog.dart';
 import 'package:wasl/core/functions/snackbar.dart';
 import 'package:wasl/core/routes/navigation.dart';
@@ -19,7 +19,6 @@ import 'package:wasl/core/utils/text_styles.dart';
 import 'package:wasl/features/auth/cubit/auth_cubit.dart';
 import 'package:wasl/features/auth/cubit/auth_state.dart';
 import 'package:wasl/features/auth/models/listtile_item_model.dart';
-import 'package:wasl/features/auth/presentation/complete_profile/widgets/expansion_tile_item.dart';
 import 'package:wasl/features/auth/presentation/complete_profile/widgets/expansion_tile_widget.dart';
 
 class BuilderCompleteProfile extends StatefulWidget {
@@ -247,7 +246,7 @@ class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
                     cubit.education = education;
                     cubit.certificates = certificates;
                     cubit.skills = skills;
-                    cubit.updateCareerBuilderData(imagePath);
+                    cubit.updateData(imagePath , usertype.Career);
                   } else {
                     showSnakBar(
                         context, AppColors.redColor, "Please Upload an Image");
