@@ -39,6 +39,7 @@ class AuthCubit extends Cubit<AuthState> {
       );
       User? user = credential.user;
       await user?.updateDisplayName(nameController.text);
+      user?.updatePhotoURL(type == usertype.Company ? "Company" : "Career");
       if (type.toString().split('.').last == "Career") {
         var career = CareerBuilderModel(
           uid: user?.uid,

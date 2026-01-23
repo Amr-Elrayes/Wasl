@@ -38,8 +38,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           onTap: () {
             pop(context);
           },
-          child: const Icon(Icons.arrow_back,
-              color: AppColors.primaryColor, size: 20),
         ),
         centerTitle: false,
       ),

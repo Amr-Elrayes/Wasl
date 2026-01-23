@@ -1,5 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:wasl/core/constants/app_images.dart';
 import 'package:wasl/core/routes/navigation.dart';
 import 'package:wasl/core/routes/routes.dart';
@@ -14,28 +14,25 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  // @override
+  @override
   void initState() {
-    //   bool seen = SharedPref.isOnboardingSeen();
-    //   User? user = FirebaseAuth.instance.currentUser;
+    bool seen = SharedPref.isOnboardingSeen();
+    User? user = FirebaseAuth.instance.currentUser;
     Future.delayed(Duration(seconds: 3), () {
-      pushReplacment(context, Routes.register);
+      if (user != null) {
+        if (user.photoURL == "Company") {
+          pushReplacment(context, Routes.Cmain);
+        } else {
+          pushReplacment(context, Routes.Bmain);
+        }
+      } else {
+        if (seen) {
+          pushReplacment(context, Routes.welcome);
+        } else {
+          pushReplacment(context, Routes.onboarding);
+        }
+      }
     });
-    //     if (user != null) {
-    //       if (user.photoURL == "doctor") {
-    //         pushReplacment(context, Routes.doctor_main);
-    //       } else {
-    //         pushReplacment(context, Routes.patent_main);
-    //       }
-    //     } else {
-    //       if (seen) {
-    //         pushReplacment(context, Routes.welcome);
-    //       } else {
-    //         pushReplacment(context, Routes.onboarding);
-    //       }
-    //     }
-    //   });
-
     super.initState();
   }
 

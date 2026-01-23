@@ -48,14 +48,14 @@ class WelcomeScreen extends StatelessWidget {
                 customButtom(
                   txt: "Login",
                   onPressed: () {
-                    pushTo(context, Routes.login);
+                    pushAndRemoveUntil(context, Routes.login);
                   },
                 ),
                 const Gap(15),
                 customButtom(
                   txt: "Sign Up",
                   onPressed: () {
-                    pushTo(context, Routes.register);
+                    pushAndRemoveUntil(context, Routes.register);
                   },
                   color: AppColors.bgColor,
                   txtColor: AppColors.primaryColor,

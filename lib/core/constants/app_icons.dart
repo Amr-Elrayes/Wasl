@@ -5,4 +5,6 @@ class AppIcons {
   static const String cameraSvg = "assets/icons/camera.svg";
   static const String wishlistSvg = "assets/icons/wishlist.svg";
   static const String searchSvg = "assets/icons/search.svg";
+  static const String requestSvg = "assets/icons/request.svg";
+  static const String addSvg = "assets/icons/add.svg";
 }

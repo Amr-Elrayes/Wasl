@@ -48,9 +48,9 @@ class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
           ),
         ),
       ),
-      body: BlocListener<AuthCubit , AuthState>(
+      body: BlocListener<AuthCubit, AuthState>(
         listener: (context, state) {
-                    if (state is AuthLoadingState) {
+          if (state is AuthLoadingState) {
             showloadingDialog(context);
           } else if (state is AuthSuccessState) {
             pop(context);
@@ -75,7 +75,8 @@ class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
                           context: context,
                           builder: (context) {
                             return Container(
-                              decoration: BoxDecoration(color: AppColors.bgColor),
+                              decoration:
+                                  BoxDecoration(color: AppColors.bgColor),
                               height: 200,
                               child: Padding(
                                 padding: const EdgeInsets.all(20),
@@ -111,7 +112,8 @@ class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
                         children: [
                           CircleAvatar(
                             radius: 70,
-                            backgroundColor: AppColors.grayColor.withOpacity(0.4),
+                            backgroundColor:
+                                AppColors.grayColor.withOpacity(0.4),
                             child: ClipOval(
                               child: imagePath != null
                                   ? Image.file(
@@ -233,27 +235,24 @@ class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
       ),
       bottomNavigationBar: SafeArea(
         child: Container(
-          margin: const EdgeInsets.all(10),
-          child: SizedBox(
-            width: double.infinity,
-            height: 60,
-            child: customButtom(
-              txt: "Done",
-              onPressed: () async {
-                if (cubit.formKey.currentState!.validate()) {
-                  if (imagePath != null) {
-                    cubit.workExperiences = workExperiences;
-                    cubit.education = education;
-                    cubit.certificates = certificates;
-                    cubit.skills = skills;
-                    cubit.updateData(imagePath , usertype.Career);
-                  } else {
-                    showSnakBar(
-                        context, AppColors.redColor, "Please Upload an Image");
-                  }
+          height: 60,
+          margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+          child: customButtom(
+            txt: "Done",
+            onPressed: () async {
+              if (cubit.formKey.currentState!.validate()) {
+                if (imagePath != null) {
+                  cubit.workExperiences = workExperiences;
+                  cubit.education = education;
+                  cubit.certificates = certificates;
+                  cubit.skills = skills;
+                  cubit.updateData(imagePath, usertype.Career);
+                } else {
+                  showSnakBar(
+                      context, AppColors.redColor, "Please Upload an Image");
                 }
-              },
-            ),
+              }
+            },
           ),
         ),
       ),
