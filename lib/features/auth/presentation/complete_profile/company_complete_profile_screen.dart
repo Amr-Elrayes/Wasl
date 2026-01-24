@@ -7,6 +7,7 @@ import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wasl/components/buttons/custom_buttom.dart';
 import 'package:wasl/components/inputs/custom_text_field.dart';
+import 'package:wasl/core/constants/Industries.dart';
 import 'package:wasl/core/constants/app_icons.dart';
 import 'package:wasl/core/constants/app_images.dart';
 import 'package:wasl/core/constants/user_type_enum.dart';
@@ -70,7 +71,7 @@ class _CompanyCompleteProfileState extends State<CompanyCompleteProfile> {
                           builder: (context) {
                             return Container(
                               decoration:
-                                  BoxDecoration(color: AppColors.bgColor),
+                                  const BoxDecoration(color: AppColors.bgColor),
                               height: 200,
                               child: Padding(
                                 padding: const EdgeInsets.all(20),
@@ -85,7 +86,7 @@ class _CompanyCompleteProfileState extends State<CompanyCompleteProfile> {
                                       txtColor: AppColors.bgColor,
                                       color: AppColors.primaryColor,
                                     ),
-                                    Gap(20),
+                                    const Gap(20),
                                     customButtom(
                                       txt: "From Gallery",
                                       onPressed: () {
@@ -138,30 +139,55 @@ class _CompanyCompleteProfileState extends State<CompanyCompleteProfile> {
                       ),
                     ),
                   ),
-                  Gap(15),
+                  const Gap(15),
                   Text(
-                    "Field",
+                    "Industrie",
                     style: TextStyles.textSize15
                         .copyWith(fontWeight: FontWeight.w500),
                   ),
-                  Gap(5),
-                  customTextformfield(
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please Enter Company’s Field";
-                      }
-                      return null;
-                    },
-                    controller: cubit.fieldController,
-                    hintText: "ex : Technology",
+                  const Gap(5),
+                  Container(
+                    height: 50,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: AppColors.softgrayColor,
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: DropdownButton<String?>(
+                      icon: const Icon(
+                        Icons.expand_circle_down_outlined,
+                        color: AppColors.primaryColor,
+                      ),
+                      iconEnabledColor: AppColors.primaryColor,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 15,
+                        vertical: 5,
+                      ),
+                      underline: const SizedBox(),
+                      isExpanded: true,
+                      hint: const Text("Select Industrie"),
+                      value: cubit.Industrie,
+                      items: [
+                        for (var industry in industryJobTitles.keys)
+                          DropdownMenuItem(
+                            value: industry,
+                            child: Text(industry),
+                          ),
+                      ],
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          cubit.Industrie = newValue;
+                        });
+                      },
+                    ),
                   ),
-                  Gap(15),
+                  const Gap(15),
                   Text(
                     "Bio",
                     style: TextStyles.textSize15
                         .copyWith(fontWeight: FontWeight.w500),
                   ),
-                  Gap(5),
+                  const Gap(5),
                   customTextformfield(
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -190,7 +216,7 @@ class _CompanyCompleteProfileState extends State<CompanyCompleteProfile> {
               onPressed: () async {
                 if (cubit.formKey.currentState!.validate()) {
                   if (imagePath != null) {
-                    cubit.updateData(imagePath , usertype.Company);
+                    cubit.updateData(imagePath, usertype.Company);
                   } else {
                     showSnakBar(
                         context, AppColors.redColor, "Please Upload an Image");

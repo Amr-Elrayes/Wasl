@@ -7,6 +7,7 @@ class CareerBuilderModel {
   final String? image;
   final String? jobTitle;
   final String? summary;
+  final String? field;
   List<ListTileItemModel>? workExperiences;
   List<ListTileItemModel>? education;
   List<ListTileItemModel>? certificates;
@@ -22,7 +23,8 @@ class CareerBuilderModel {
       this.workExperiences,
       this.education,
       this.certificates,
-      this.skills});
+      this.skills,
+      this.field});
 
   factory CareerBuilderModel.fromJson(Map<String, dynamic> json) {
     return CareerBuilderModel(
@@ -32,6 +34,7 @@ class CareerBuilderModel {
       image: json['image'],
       jobTitle: json['jobTitle'],
       summary: json['summary'],
+      field: json['field'],
       skills: (json['skills'] as List<dynamic>? ?? [])
           .map((e) => ListTileItemModel.fromJson(e))
           .toList(),
@@ -55,6 +58,7 @@ class CareerBuilderModel {
       'image': image,
       'jobTitle': jobTitle,
       'summary': summary,
+      'field': field,
       'skills': skills?.map((e) => e.toJson()).toList(),
       'certificates': certificates?.map((e) => e.toJson()).toList(),
       'education': education?.map((e) => e.toJson()).toList(),
@@ -68,6 +72,7 @@ Map<String, dynamic> updateData() => {
   if (image != null) 'image': image,
   if (jobTitle != null) 'jobTitle': jobTitle,
   if (summary != null) 'summary': summary,
+  if (field != null) 'field': field,
   if (uid != null) 'uid': uid,
 
   if (workExperiences != null)

@@ -18,16 +18,16 @@ class AuthCubit extends Cubit<AuthState> {
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
   var confirmpasswordController = TextEditingController();
-  var jobTitleController = TextEditingController();
   var summaryController = TextEditingController();
   var skillController = TextEditingController();
-  var fieldController = TextEditingController();
   var bioController = TextEditingController();
   List<ListTileItemModel> workExperiences = [];
   List<ListTileItemModel> education = [];
   List<ListTileItemModel> certificates = [];
   List<ListTileItemModel> skills = [];
   usertype? selectedUserType;
+  String? Industrie;
+  String? jobTitle;
 
   register({required usertype type}) async {
     emit(AuthLoadingState());
@@ -140,7 +140,7 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  updateData(File? pickedImage , usertype user) async {
+  updateData(File? pickedImage, usertype user) async {
     emit(AuthLoadingState());
     try {
       if (pickedImage == null) {
@@ -152,37 +152,34 @@ class AuthCubit extends Cubit<AuthState> {
         emit(AuthFailureState("Uplad Image Fails , try Again"));
         return;
       }
-      if(user == usertype.Career)
-      {
-              var careerBuilder = CareerBuilderModel(
-          uid: FirebaseAuth.instance.currentUser?.uid,
-          jobTitle: jobTitleController.text,
-          summary: summaryController.text,
-          image: imgUrl,
-          workExperiences: workExperiences,
-          education: education,
-          certificates: certificates,
-          skills: skills);
-      await FirebaseFirestore.instance
-          .collection("Career")
-          .doc(careerBuilder.uid)
-          .update(careerBuilder.updateData());
-      emit(AuthSuccessState());
+      if (user == usertype.Career) {
+        var careerBuilder = CareerBuilderModel(
+            uid: FirebaseAuth.instance.currentUser?.uid,
+            jobTitle: jobTitle,
+            summary: summaryController.text,
+            image: imgUrl,
+            field: Industrie,
+            workExperiences: workExperiences,
+            education: education,
+            certificates: certificates,
+            skills: skills);
+        await FirebaseFirestore.instance
+            .collection("Career")
+            .doc(careerBuilder.uid)
+            .update(careerBuilder.updateData());
+        emit(AuthSuccessState());
+      } else {
+        var Company = CompanyModel(
+            uid: FirebaseAuth.instance.currentUser?.uid,
+            image: imgUrl,
+            bio: bioController.text,
+            field: Industrie);
+        await FirebaseFirestore.instance
+            .collection("Company")
+            .doc(Company.uid)
+            .update(Company.updateData());
+        emit(AuthSuccessState());
       }
-      else
-      {
-              var Company = CompanyModel(
-          uid: FirebaseAuth.instance.currentUser?.uid,
-          image: imgUrl,
-          bio: bioController.text,
-          field: fieldController.text);
-      await FirebaseFirestore.instance
-          .collection("Company")
-          .doc(Company.uid)
-          .update(Company.updateData());
-      emit(AuthSuccessState());
-      }
-
     } on Exception catch (_) {
       emit(AuthFailureState("There is an Error , try again later"));
     }
