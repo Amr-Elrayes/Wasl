@@ -8,6 +8,8 @@ import 'package:wasl/features/auth/presentation/complete_profile/company_complet
 import 'package:wasl/features/auth/presentation/login/login_screen.dart';
 import 'package:wasl/features/auth/presentation/register/register_screen.dart';
 import 'package:wasl/features/career/main/career_builder_main_screen.dart';
+import 'package:wasl/features/career/profile/presentation/screens/profile_screen.dart';
+import 'package:wasl/features/company/home/presentation/screens/indusrty_employee.dart';
 import 'package:wasl/features/company/main/company_main_screen.dart';
 import 'package:wasl/features/intro/onboarding/onboarding_screen.dart';
 import 'package:wasl/features/intro/splash/splash_screen.dart';
@@ -23,6 +25,8 @@ class Routes {
   static String CompanyCompleteProfileScreen = "/CompanyCompleteProfileScreen";
   static String Bmain = "/Bmain";
   static String Cmain = "/Cmain";
+  static String BprofileScreen = "/BprofileScreen";
+  static String induartyemployee = "/induartyemployee";
 
   static GoRouter routes = GoRouter(
     routes: [
@@ -73,6 +77,18 @@ class Routes {
         path: Cmain,
         builder: (context, state) {
           return const CompanyMainScreen();
+        },
+      ),
+      GoRoute(
+        path: BprofileScreen,
+        builder: (context, state) {
+          return const ProfileScreen();
+        },
+      ),
+      GoRoute(
+        path: induartyemployee,
+        builder: (context, state) {
+          return const IndusrtyEmployee();
         },
       ),
     ],

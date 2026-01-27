@@ -1,3 +1,5 @@
+import 'package:wasl/features/auth/models/career_builder_model.dart';
+
 class JobModel {
   final String? title;
   final String? field;
@@ -7,6 +9,7 @@ class JobModel {
   final String? status;
   final String? requirments;
   final List<String>? reqSkills;
+  final List<CareerBuilderModel>? applications;
   JobModel( 
 {    this.field, 
     this.type, 
@@ -15,7 +18,9 @@ class JobModel {
     this.status,
     this.requirments, 
     this.reqSkills, 
-    this.title}
+    this.title,
+    this.applications
+    }
     );
 
 
@@ -29,7 +34,8 @@ class JobModel {
       description: json['description'],
       requirments: json['requirments'],
       reqSkills: json['reqSkills'],
-      status:json['status']
+      status:json['status'],
+      applications: json['applications']
     );
   }
 
@@ -42,6 +48,7 @@ class JobModel {
     data['description'] = description;
     data['requirments'] = requirments;
     data['reqSkills'] = reqSkills;
+    data['applications'] = applications;
     return data;
       }
 
@@ -53,5 +60,6 @@ class JobModel {
   if (description != null) 'description': description,
   if (requirments != null) 'requirments': requirments,
   if (reqSkills != null) 'reqSkills': reqSkills,
+  if (applications != null) 'applications': applications,
 };
 }
