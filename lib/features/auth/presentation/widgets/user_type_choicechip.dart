@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wasl/core/constants/user_type_enum.dart';
+import 'package:wasl/core/constants/enums.dart';
 import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/core/utils/text_styles.dart';
 

@@ -4,7 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:wasl/components/buttons/custom_buttom.dart';
 import 'package:wasl/components/inputs/custom_text_field.dart';
 import 'package:wasl/components/inputs/password_text_field.dart';
-import 'package:wasl/core/constants/user_type_enum.dart';
+import 'package:wasl/core/constants/enums.dart';
 import 'package:wasl/core/functions/showloadingdialog.dart';
 import 'package:wasl/core/functions/snackbar.dart';
 import 'package:wasl/core/routes/navigation.dart';

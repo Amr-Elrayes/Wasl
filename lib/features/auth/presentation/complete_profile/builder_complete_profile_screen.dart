@@ -10,7 +10,7 @@ import 'package:wasl/components/inputs/custom_text_field.dart';
 import 'package:wasl/core/constants/Industries.dart';
 import 'package:wasl/core/constants/app_icons.dart';
 import 'package:wasl/core/constants/app_images.dart';
-import 'package:wasl/core/constants/user_type_enum.dart';
+import 'package:wasl/core/constants/enums.dart';
 import 'package:wasl/core/functions/showloadingdialog.dart';
 import 'package:wasl/core/functions/snackbar.dart';
 import 'package:wasl/core/routes/navigation.dart';

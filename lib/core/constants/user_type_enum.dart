@@ -1,1 +1,0 @@
-enum usertype { Career, Company }

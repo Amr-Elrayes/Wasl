@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wasl/core/constants/user_type_enum.dart';
+import 'package:wasl/core/constants/enums.dart';
 import 'package:wasl/core/functions/upload_image.dart';
 import 'package:wasl/features/auth/cubit/auth_state.dart';
 import 'package:wasl/features/auth/models/career_builder_model.dart';
