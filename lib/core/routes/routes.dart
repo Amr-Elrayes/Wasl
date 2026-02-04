@@ -2,6 +2,7 @@
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:wasl/core/job/cubit/job_cubit.dart';
 import 'package:wasl/features/auth/cubit/auth_cubit.dart';
 import 'package:wasl/features/auth/presentation/complete_profile/builder_complete_profile_screen.dart';
 import 'package:wasl/features/auth/presentation/complete_profile/company_complete_profile_screen.dart';
@@ -70,13 +71,19 @@ class Routes {
       GoRoute(
         path: Bmain,
         builder: (context, state) {
-          return const CareerBuilderMainScreen();
+          return BlocProvider(
+            create: (context) => JobCubit(),
+            child: const CareerBuilderMainScreen(),
+          );
         },
       ),
       GoRoute(
         path: Cmain,
         builder: (context, state) {
-          return const CompanyMainScreen();
+          return BlocProvider(
+            create: (context) => JobCubit(),
+            child: const CompanyMainScreen(),
+          );
         },
       ),
       GoRoute(

@@ -245,65 +245,49 @@ class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
                     maxlines: 4,
                   ),
                   const Gap(15),
-                  BlocBuilder<AuthCubit, AuthState>(
-                    builder: (context, state) {
-                      return ExpansionTileWidget(
-                        title: "Work Experience",
-                        items: workExperiences,
-                        onAdd: (item) {
-                          setState(() => workExperiences.add(item));
-                        },
-                        onDelete: (index) {
-                          setState(() => workExperiences.removeAt(index));
-                        },
-                      );
+                  ExpansionTileWidget(
+                    title: "Work Experience",
+                    items: workExperiences,
+                    onAdd: (item) {
+                      setState(() => workExperiences.add(item));
+                    },
+                    onDelete: (index) {
+                      setState(() => workExperiences.removeAt(index));
                     },
                   ),
                   const Gap(15),
-                  BlocBuilder<AuthCubit, AuthState>(
-                    builder: (context, state) {
-                      return ExpansionTileWidget(
-                        title: "Education",
-                        items: education,
-                        onAdd: (item) {
-                          setState(() => education.add(item));
-                        },
-                        onDelete: (index) {
-                          setState(() => education.removeAt(index));
-                        },
-                      );
+                  ExpansionTileWidget(
+                    title: "Education",
+                    items: education,
+                    onAdd: (item) {
+                      setState(() => education.add(item));
+                    },
+                    onDelete: (index) {
+                      setState(() => education.removeAt(index));
                     },
                   ),
                   const Gap(15),
-                  BlocBuilder<AuthCubit, AuthState>(
-                    builder: (context, state) {
-                      return ExpansionTileWidget(
-                        title: "Certificates",
-                        items: certificates,
-                        onAdd: (item) {
-                          setState(() => certificates.add(item));
-                        },
-                        onDelete: (index) {
-                          setState(() => certificates.removeAt(index));
-                        },
-                      );
+                  ExpansionTileWidget(
+                    title: "Certificates",
+                    items: certificates,
+                    onAdd: (item) {
+                      setState(() => certificates.add(item));
+                    },
+                    onDelete: (index) {
+                      setState(() => certificates.removeAt(index));
                     },
                   ),
                   const Gap(15),
-                  BlocBuilder<AuthCubit, AuthState>(
-                    builder: (context, state) {
-                      return ExpansionTileWidget(
-                        title: "Skills",
-                        items: skills,
-                        onAdd: (item) {
-                          setState(() => skills.add(item));
-                        },
-                        onDelete: (index) {
-                          setState(() => skills.removeAt(index));
-                        },
-                      );
+                  ExpansionTileWidget(
+                    title: "Skills",
+                    items: skills,
+                    onAdd: (item) {
+                      setState(() => skills.add(item));
                     },
-                  ),
+                    onDelete: (index) {
+                      setState(() => skills.removeAt(index));
+                    },
+                  )
                 ],
               ),
             ),

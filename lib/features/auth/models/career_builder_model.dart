@@ -8,6 +8,7 @@ class CareerBuilderModel {
   final String? jobTitle;
   final String? summary;
   final String? field;
+  bool isProfileCompleted;
   List<ListTileItemModel>? workExperiences;
   List<ListTileItemModel>? education;
   List<ListTileItemModel>? certificates;
@@ -24,7 +25,9 @@ class CareerBuilderModel {
       this.education,
       this.certificates,
       this.skills,
-      this.field});
+      this.field,
+      this.isProfileCompleted = false
+      });
 
   factory CareerBuilderModel.fromJson(Map<String, dynamic> json) {
     return CareerBuilderModel(
@@ -35,6 +38,7 @@ class CareerBuilderModel {
       jobTitle: json['jobTitle'],
       summary: json['summary'],
       field: json['field'],
+      isProfileCompleted: json['isProfileCompleted'] ?? false,
       skills: (json['skills'] as List<dynamic>? ?? [])
           .map((e) => ListTileItemModel.fromJson(e))
           .toList(),
@@ -59,6 +63,7 @@ class CareerBuilderModel {
       'jobTitle': jobTitle,
       'summary': summary,
       'field': field,
+      'isProfileCompleted': isProfileCompleted,
       'skills': skills?.map((e) => e.toJson()).toList(),
       'certificates': certificates?.map((e) => e.toJson()).toList(),
       'education': education?.map((e) => e.toJson()).toList(),
@@ -74,6 +79,7 @@ Map<String, dynamic> updateData() => {
   if (summary != null) 'summary': summary,
   if (field != null) 'field': field,
   if (uid != null) 'uid': uid,
+  'isProfileCompleted': isProfileCompleted,
 
   if (workExperiences != null)
     'workExperiences': workExperiences!.map((e) => e.toJson()).toList(),

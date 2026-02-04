@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wasl/core/constants/app_images.dart';
@@ -14,26 +15,49 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+
   @override
   void initState() {
-    bool seen = SharedPref.isOnboardingSeen();
-    User? user = FirebaseAuth.instance.currentUser;
-    Future.delayed(Duration(seconds: 3), () {
-      if (user != null) {
-        if (user.photoURL == "Company") {
-          pushReplacment(context, Routes.Cmain);
-        } else {
-          pushReplacment(context, Routes.Bmain);
-        }
-      } else {
-        if (seen) {
-          pushReplacment(context, Routes.welcome);
-        } else {
-          pushReplacment(context, Routes.onboarding);
-        }
-      }
-    });
     super.initState();
+    Future.delayed(const Duration(seconds: 3), _decideRoute);
+  }
+
+  Future<void> _decideRoute() async {
+    final bool seen = SharedPref.isOnboardingSeen();
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      pushReplacment(
+        context,
+        seen ? Routes.welcome : Routes.onboarding,
+      );
+      return;
+    }
+
+    final bool isCompany = user.photoURL == "Company";
+    final String collection = isCompany ? "Company" : "Career";
+
+    final doc = await FirebaseFirestore.instance
+        .collection(collection)
+        .doc(user.uid)
+        .get();
+
+    final data = doc.data();
+
+    if (data == null || data['isProfileCompleted'] != true) {
+      pushReplacment(
+        context,
+        isCompany
+            ? Routes.CompanyCompleteProfileScreen
+            : Routes.BuilderCompleteProfileScreen,
+      );
+    } 
+    else {
+      pushReplacment(
+        context,
+        isCompany ? Routes.Cmain : Routes.Bmain,
+      );
+    }
   }
 
   @override
@@ -41,12 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: AppColors.primaryColor,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(AppImages.logo, width: 500),
-          ],
-        ),
+        child: Image.asset(AppImages.logo, width: 500),
       ),
     );
   }

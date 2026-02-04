@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:wasl/components/cards/emplpyee_card.dart';
+import 'package:wasl/core/constants/app_images.dart';
 import 'package:wasl/core/utils/colors.dart';
+import 'package:wasl/core/utils/text_styles.dart';
 import 'package:wasl/features/auth/models/career_builder_model.dart';
 import 'package:wasl/services/firebase/firebase_services.dart';
 
@@ -29,7 +32,19 @@ class employeesInIndustry extends StatelessWidget {
                 child: CircularProgressIndicator(),
               );
             }
-
+            if (snapshot.data!.docs.isEmpty) {
+              return Center(
+                child: Column(
+                  children: [
+                    Lottie.asset(AppImages.noData, width: 160, height: 160),
+                    Text(
+                      "No Employees In Your Indusrty",
+                      style: TextStyles.textSize15,
+                    )
+                  ],
+                ),
+              );
+            }
             return ListView.separated(
               separatorBuilder: (_, __) =>
                   const Divider(color: AppColors.grayColor),

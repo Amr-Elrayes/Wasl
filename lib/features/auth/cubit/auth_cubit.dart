@@ -19,7 +19,6 @@ class AuthCubit extends Cubit<AuthState> {
   var passwordController = TextEditingController();
   var confirmpasswordController = TextEditingController();
   var summaryController = TextEditingController();
-  var skillController = TextEditingController();
   var bioController = TextEditingController();
   List<ListTileItemModel> workExperiences = [];
   List<ListTileItemModel> education = [];
@@ -40,6 +39,7 @@ class AuthCubit extends Cubit<AuthState> {
       User? user = credential.user;
       await user?.updateDisplayName(nameController.text);
       user?.updatePhotoURL(type == usertype.Company ? "Company" : "Career");
+
       if (type.toString().split('.').last == "Career") {
         var career = CareerBuilderModel(
           uid: user?.uid,
@@ -159,6 +159,7 @@ class AuthCubit extends Cubit<AuthState> {
             summary: summaryController.text,
             image: imgUrl,
             field: Industrie,
+            isProfileCompleted: true,
             workExperiences: workExperiences,
             education: education,
             certificates: certificates,
@@ -173,7 +174,8 @@ class AuthCubit extends Cubit<AuthState> {
             uid: FirebaseAuth.instance.currentUser?.uid,
             image: imgUrl,
             bio: bioController.text,
-            field: Industrie);
+            field: Industrie,
+            isProfileCompleted: true);
         await FirebaseFirestore.instance
             .collection("Company")
             .doc(Company.uid)
