@@ -78,4 +78,12 @@ class CompanyModel {
         if (terminatedJobs != null)
           'terminatedJobs': terminatedJobs!.map((e) => e.toJson()).toList(),
       };
+
+      int get totalApplications {
+  if (uploadedJobs == null) return 0;
+
+  return uploadedJobs!
+      .fold(0, (sum, job) => sum + (job.applications?.length ?? 0));
+}
+
 }

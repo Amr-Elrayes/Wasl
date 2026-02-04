@@ -42,7 +42,7 @@ class DetailsGridView extends StatelessWidget {
             ),
             DetailContainer(
               title: "Total Applications",
-              value: company.uploadedJobs?.length.toString() ?? "0",
+              value: company.totalApplications.toString(),
             ),
             DetailContainer(
               title: "Active Jobs",
