@@ -31,7 +31,7 @@ class WelcomeScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Welcome To Jubify ,",
+                      "Welcome To Wasl ,",
                       style: TextStyles.textSize30.copyWith(
                           color: AppColors.primaryColor,
                           fontWeight: FontWeight.bold),

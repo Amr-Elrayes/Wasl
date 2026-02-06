@@ -1,3 +1,5 @@
+import 'package:wasl/core/job/models/job_model.dart';
+
 class JobState {}
 
 class JobInitialState extends JobState {}
@@ -13,4 +15,9 @@ class JobFailureState extends JobState {
   final String errorMessage;
   JobFailureState(this.errorMessage);
   
+}
+
+class JobListLoadedState extends JobState {
+  final List<JobModel> jobs;
+  JobListLoadedState(this.jobs);
 }

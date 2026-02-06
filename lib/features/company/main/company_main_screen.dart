@@ -18,18 +18,29 @@ class CompanyMainScreen extends StatefulWidget {
 class _CompanyMainScreenState extends State<CompanyMainScreen> {
   late int currentIndex;
 
-  @override
-  void initState() {
-    super.initState();
-    currentIndex = widget.initialIndex;
-  }
 
-  List<Widget> screens = [
-    const HomeScreen(),
+
+  late List<Widget> screens;
+
+@override
+void initState() {
+  super.initState();
+  currentIndex = widget.initialIndex;
+
+  screens = [
+    HomeScreen(
+      onTotalApplicationsTap: () {
+        setState(() {
+          currentIndex = 2; // RequestsScreen
+        });
+      },
+    ),
     const AddJobSreen(),
     const RequestesScreen(),
-    const ProfileScreen()
+    const ProfileScreen(),
   ];
+}
+
 
   @override
   Widget build(BuildContext context) {

@@ -10,6 +10,7 @@ import 'package:wasl/core/functions/showloadingdialog.dart';
 import 'package:wasl/core/functions/snackbar.dart';
 import 'package:wasl/core/job/cubit/job_cubit.dart';
 import 'package:wasl/core/job/cubit/job_state.dart';
+import 'package:wasl/core/job/models/job_model.dart';
 import 'package:wasl/core/routes/navigation.dart';
 import 'package:wasl/core/routes/routes.dart';
 import 'package:wasl/core/utils/colors.dart';
@@ -18,40 +19,59 @@ import 'package:wasl/features/auth/models/listtile_item_model.dart';
 import 'package:wasl/features/company/add%20job/presentation/widgets/addjob_expansion_tile_widget.dart';
 
 class AddJobSreen extends StatefulWidget {
-  const AddJobSreen({super.key});
+  const AddJobSreen({super.key, this.job});
+  final JobModel? job;
 
+  bool get isEdit => job != null;
   @override
   State<AddJobSreen> createState() => _AddJobSreenState();
 }
 
 class _AddJobSreenState extends State<AddJobSreen> {
+  List<ListTileItemModel> skills = [];
   @override
   void initState() {
     super.initState();
-
     final cubit = context.read<JobCubit>();
 
-    cubit.title = null;
-    cubit.jobType = null;
-    cubit.jobLocation = null;
+    if (widget.isEdit) {
+      final job = widget.job!;
 
-    cubit.describtionController.clear();
-    cubit.requirmentsController.clear();
-    cubit.salaryController.clear();
+      cubit.title = job.title;
+      cubit.describtionController.text = job.description ?? "";
+      cubit.requirmentsController.text = job.requirments ?? "";
+      cubit.salaryController.text = job.salary?.toString() ?? "";
 
-    cubit.reqskills.clear();
+      cubit.jobType = Jobtype.values.firstWhere((e) => e.name == job.type);
+
+      cubit.jobLocation =
+          Joblocation.values.firstWhere((e) => e.name == job.location);
+
+      /// ⭐⭐ المهم هنا ⭐⭐
+      skills = List<ListTileItemModel>.from(job.reqSkills ?? []);
+    } else {
+      cubit.clearForm();
+      skills.clear();
+    }
   }
-
-  List<ListTileItemModel> skills = [];
 
   @override
   Widget build(BuildContext context) {
     var cubit = context.watch<JobCubit>();
     return Scaffold(
       appBar: AppBar(
+        leading: widget.isEdit
+            ? IconButton(
+                onPressed: () {
+                  pop(context);
+                },
+                icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                color: Colors.white,
+              )
+            : null,
         backgroundColor: AppColors.primaryColor,
         title: Text(
-          "Add Job",
+          widget.isEdit ? "Update Job" : "Add Job",
           style: TextStyles.textSize24.copyWith(
             color: AppColors.bgColor,
           ),
@@ -64,7 +84,7 @@ class _AddJobSreenState extends State<AddJobSreen> {
           } else if (state is JobSuccessState) {
             cubit.clearForm();
             pop(context);
-            showSnakBar(context, Colors.green, "Job Added Successfully");
+            showSnakBar(context, Colors.green, "Success");
             pushAndRemoveUntil(context, Routes.Cmain);
           } else if (state is JobFailureState) {
             Navigator.pop(context);
@@ -149,6 +169,7 @@ class _AddJobSreenState extends State<AddJobSreen> {
                       if (value == null || value.isEmpty) {
                         return "Please Enter Job Description";
                       }
+                      return null;
                     },
                   ),
                   const Gap(15),
@@ -235,6 +256,7 @@ class _AddJobSreenState extends State<AddJobSreen> {
                             if (value == null || value.isEmpty) {
                               return "Please Enter Job Salary";
                             }
+                            return null;
                           },
                         ),
                       ),
@@ -263,6 +285,7 @@ class _AddJobSreenState extends State<AddJobSreen> {
                       if (value == null || value.isEmpty) {
                         return "Please Enter Job Requirments";
                       }
+                      return null;
                     },
                   ),
                   const Gap(15),
@@ -288,12 +311,21 @@ class _AddJobSreenState extends State<AddJobSreen> {
           height: 60,
           margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
           child: customButtom(
-            txt: "Done",
+            txt: widget.isEdit ? "Update" : "Done",
             onPressed: () async {
               if (cubit.formKey.currentState!.validate()) {
                 cubit.reqskills = skills;
-                await cubit.uploadJob(
-                    companyId: FirebaseAuth.instance.currentUser!.uid);
+
+                if (widget.isEdit) {
+                  await cubit.updateJob(
+                    companyId: FirebaseAuth.instance.currentUser!.uid,
+                    jobId: widget.job!.jobId,
+                  );
+                } else {
+                  await cubit.uploadJob(
+                    companyId: FirebaseAuth.instance.currentUser!.uid,
+                  );
+                }
               }
             },
           ),

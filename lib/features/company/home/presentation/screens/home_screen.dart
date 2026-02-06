@@ -8,8 +8,8 @@ import 'package:wasl/core/utils/text_styles.dart';
 import 'package:wasl/features/company/home/presentation/widgets/employees_in_industry.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
+  const HomeScreen({super.key, required this.onTotalApplicationsTap});
+final VoidCallback onTotalApplicationsTap;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +19,9 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const DetailsGridView(),
+              DetailsGridView(
+                onTotalApplicationsTap: onTotalApplicationsTap,
+              ),
               const Gap(50),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

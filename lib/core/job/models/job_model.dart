@@ -4,6 +4,7 @@ import 'package:wasl/features/auth/models/listtile_item_model.dart';
 class JobModel {
   final String jobId; 
   final String? title;
+  final String? company;
   final String? location;
   final String? type;
   final double? salary;
@@ -23,6 +24,7 @@ class JobModel {
     this.requirments,
     this.reqSkills,
     this.title,
+    this.company,
     this.applications,
   });
 
@@ -30,6 +32,7 @@ class JobModel {
     return JobModel(
       jobId: json['jobId'],
       title: json['title'],
+      company: json['company'],
       location: json['location'],
       type: json['type'],
       salary: json['salary'],
@@ -48,6 +51,7 @@ class JobModel {
   Map<String, dynamic> toJson() => {
         'jobId': jobId,
         'title': title,
+        'company': company,
         'location': location,
         'type': type,
         'salary': salary,
