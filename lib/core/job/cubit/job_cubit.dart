@@ -200,62 +200,157 @@ class JobCubit extends Cubit<JobState> {
 }
 
 
-  Future<void> deleteJob(String jobId) async {
-    try {
-      final companyId = FirebaseAuth.instance.currentUser!.uid;
-      final companyDoc =
-          FirebaseFirestore.instance.collection('Company').doc(companyId);
+Future<void> terminateJobFromActive(String jobId) async {
+  try {
+    emit(JobLoadingState());
 
-      // نجيب بيانات الشركة
-      final snapshot = await companyDoc.get();
-      final data = snapshot.data()!;
+    final companyId = FirebaseAuth.instance.currentUser!.uid;
+    final companyDoc =
+        FirebaseFirestore.instance.collection('Company').doc(companyId);
 
-      List uploadedJobs = List.from(data['uploadedJobs'] ?? []);
-      List activeJobs = List.from(data['activeJobs'] ?? []);
-      List terminatedJobs = List.from(data['terminatedJobs'] ?? []);
+    final snapshot = await companyDoc.get();
+    final data = snapshot.data()!;
 
-      // نبحث عن الوظيفة في terminated
-      final jobInTerminated =
-          terminatedJobs.any((job) => job['jobId'] == jobId);
+    List uploadedJobs = List.from(data['uploadedJobs'] ?? []);
+    List activeJobs = List.from(data['activeJobs'] ?? []);
+    List terminatedJobs = List.from(data['terminatedJobs'] ?? []);
 
-      // حذف من جميع الليستات
-      uploadedJobs.removeWhere((job) => job['jobId'] == jobId);
-      activeJobs.removeWhere((job) => job['jobId'] == jobId);
-      terminatedJobs.removeWhere((job) => job['jobId'] == jobId);
+    // 1️⃣ نجيب الجوب من active
+    final index =
+        activeJobs.indexWhere((job) => job['jobId'] == jobId);
+    if (index == -1) return;
 
-      if (!jobInTerminated) {
-        // لو مش موجودة في terminated، نضيفها هناك
-        final jobDoc = await FirebaseFirestore.instance
-            .collection('jobs')
-            .doc(jobId)
-            .get();
-        if (jobDoc.exists) {
-          terminatedJobs.add(jobDoc.data());
-          // وحذفها من collection عشان تبقى "terminated" مش موجودة في الكولكشن
-          await FirebaseFirestore.instance
-              .collection('jobs')
-              .doc(jobId)
-              .delete();
-        }
-      } else {
-        // لو موجودة في terminated، نحذفها بالكامل من collection
-        await FirebaseFirestore.instance.collection('jobs').doc(jobId).delete();
-      }
+    Map<String, dynamic> job = Map.from(activeJobs[index]);
 
-      // نعمل update للـ Company document
-      await companyDoc.update({
-        'uploadedJobs': uploadedJobs,
-        'activeJobs': activeJobs,
-        'terminatedJobs': terminatedJobs,
-      });
+    // 2️⃣ نحدث status
+    job['status'] = 'Terminated';
 
-      // تحديث الـ bloc state لو موجود
-      if (state is JobListLoadedState) {
-        _currentJobs.removeWhere((job) => job.jobId == jobId);
-        emit(JobListLoadedState(_currentJobs));
-      }
-    } catch (e) {
-      emit(JobFailureState(e.toString()));
+    // 3️⃣ نشيلها من active
+    activeJobs.removeAt(index);
+
+    // 4️⃣ نضيفها في terminated
+    terminatedJobs.add(job);
+
+    // 5️⃣ نحدثها داخل uploaded
+    final uploadedIndex =
+        uploadedJobs.indexWhere((j) => j['jobId'] == jobId);
+    if (uploadedIndex != -1) {
+      uploadedJobs[uploadedIndex] = job;
     }
+
+    // 6️⃣ Update Company
+    await companyDoc.update({
+      'activeJobs': activeJobs,
+      'terminatedJobs': terminatedJobs,
+      'uploadedJobs': uploadedJobs,
+    });
+
+    // 7️⃣ نشيلها من jobs collection
+    await FirebaseFirestore.instance
+        .collection('jobs')
+        .doc(jobId)
+        .delete();
+
+    // 8️⃣ تحديث الـ UI
+    _currentJobs.removeWhere((j) => j.jobId == jobId);
+    emit(JobListLoadedState(_currentJobs));
+
+  } catch (e) {
+    emit(JobFailureState(e.toString()));
   }
+}
+
+Future<void> restoreJob(String jobId) async {
+  try {
+    emit(JobLoadingState());
+
+    final companyId = FirebaseAuth.instance.currentUser!.uid;
+    final companyDoc =
+        FirebaseFirestore.instance.collection('Company').doc(companyId);
+
+    final snapshot = await companyDoc.get();
+    final data = snapshot.data()!;
+
+    List uploadedJobs = List.from(data['uploadedJobs'] ?? []);
+    List activeJobs = List.from(data['activeJobs'] ?? []);
+    List terminatedJobs = List.from(data['terminatedJobs'] ?? []);
+
+    final index =
+        terminatedJobs.indexWhere((job) => job['jobId'] == jobId);
+    if (index == -1) return;
+
+    Map<String, dynamic> job = Map.from(terminatedJobs[index]);
+
+    job['status'] = 'Active';
+
+    // 1️⃣ شيلها من terminated
+    terminatedJobs.removeAt(index);
+
+    // 2️⃣ ضيفها في active
+    activeJobs.add(job);
+
+    // 3️⃣ حدث uploaded
+    final uploadedIndex =
+        uploadedJobs.indexWhere((j) => j['jobId'] == jobId);
+    if (uploadedIndex != -1) {
+      uploadedJobs[uploadedIndex] = job;
+    }
+
+    // 4️⃣ رجّعها لل jobs collection
+    await FirebaseFirestore.instance
+        .collection('jobs')
+        .doc(jobId)
+        .set(job);
+
+    // 5️⃣ Update Company
+    await companyDoc.update({
+      'activeJobs': activeJobs,
+      'terminatedJobs': terminatedJobs,
+      'uploadedJobs': uploadedJobs,
+    });
+
+    _currentJobs.removeWhere((j) => j.jobId == jobId);
+    emit(JobListLoadedState(_currentJobs));
+
+  } catch (e) {
+    emit(JobFailureState(e.toString()));
+  }
+}
+
+Future<void> deleteJobPermanently(String jobId) async {
+  try {
+    emit(JobLoadingState());
+
+    final companyId = FirebaseAuth.instance.currentUser!.uid;
+    final companyDoc =
+        FirebaseFirestore.instance.collection('Company').doc(companyId);
+
+    final snapshot = await companyDoc.get();
+    final data = snapshot.data()!;
+
+    List uploadedJobs = List.from(data['uploadedJobs'] ?? []);
+    List terminatedJobs = List.from(data['terminatedJobs'] ?? []);
+
+    uploadedJobs.removeWhere((j) => j['jobId'] == jobId);
+    terminatedJobs.removeWhere((j) => j['jobId'] == jobId);
+
+    await companyDoc.update({
+      'uploadedJobs': uploadedJobs,
+      'terminatedJobs': terminatedJobs,
+    });
+
+    await FirebaseFirestore.instance
+        .collection('jobs')
+        .doc(jobId)
+        .delete();
+
+    _currentJobs.removeWhere((j) => j.jobId == jobId);
+    emit(JobListLoadedState(_currentJobs));
+
+  } catch (e) {
+    emit(JobFailureState(e.toString()));
+  }
+}
+
+
 }

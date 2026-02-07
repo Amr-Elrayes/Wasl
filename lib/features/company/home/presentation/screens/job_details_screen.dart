@@ -18,6 +18,137 @@ class jobDetailsScreen extends StatefulWidget {
 }
 
 class _jobDetailsScreenState extends State<jobDetailsScreen> {
+  List<Widget> _buildCompanyActions(BuildContext context) {
+  final cubit = context.read<JobCubit>();
+
+  if (widget.job.status == "Active") {
+    return _activeJobActions(context, cubit);
+  } else {
+    return _terminatedJobActions(context, cubit);
+  }
+}
+List<Widget> _activeJobActions(
+  BuildContext context,
+  JobCubit cubit,
+) {
+  return [
+    IconButton(
+      icon: const Icon(Icons.edit, color: Colors.white),
+      onPressed: () {
+        pushTo(context, Routes.addJob, extra: widget.job);
+      },
+    ),
+    IconButton(
+      icon: const Icon(Icons.delete, color: Colors.white),
+      onPressed: () {
+        _showTerminateDialog(context, cubit);
+      },
+    ),
+  ];
+}
+
+List<Widget> _terminatedJobActions(
+  BuildContext context,
+  JobCubit cubit,
+) {
+  return [
+    IconButton(
+      icon: const Icon(Icons.restore, color: Colors.white),
+      onPressed: () {
+        _showRestoreDialog(context, cubit);
+      },
+    ),
+    IconButton(
+      icon: const Icon(Icons.delete_forever, color: Colors.white),
+      onPressed: () {
+        _showDeleteForeverDialog(context, cubit);
+      },
+    ),
+  ];
+}
+
+void _showTerminateDialog(BuildContext context, JobCubit cubit) {
+  showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: const Text("Terminate Job"),
+      content: const Text(
+        "This job will be moved to terminated jobs.",
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => pop(context),
+          child: const Text("Cancel"),
+        ),
+        TextButton(
+          onPressed: () {
+            pop(context);
+            cubit.terminateJobFromActive(widget.job.jobId);
+            pop(context); // رجوع للتوتال
+          },
+          child: const Text("Terminate"),
+        ),
+      ],
+    ),
+  );
+}
+
+void _showRestoreDialog(BuildContext context, JobCubit cubit) {
+  showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: const Text("Restore Job"),
+      content: const Text(
+        "This job will become active again.",
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => pop(context),
+          child: const Text("Cancel"),
+        ),
+        TextButton(
+          onPressed: () {
+            pop(context);
+            cubit.restoreJob(widget.job.jobId);
+            pop(context);
+          },
+          child: const Text("Restore"),
+        ),
+      ],
+    ),
+  );
+}
+
+
+void _showDeleteForeverDialog(BuildContext context, JobCubit cubit) {
+  showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: const Text("Delete Job Permanently"),
+      content: const Text(
+        "This action cannot be undone.",
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => pop(context),
+          child: const Text("Cancel"),
+        ),
+        TextButton(
+          onPressed: () {
+            pop(context);
+            cubit.deleteJobPermanently(widget.job.jobId);
+            pop(context);
+          },
+          child: const Text(
+            "Delete",
+            style: TextStyle(color: Colors.red),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
   bool isCompany = false;
   @override
   void initState() {
@@ -56,56 +187,16 @@ class _jobDetailsScreenState extends State<jobDetailsScreen> {
         ),
         centerTitle: false,
         actions: [
-          if (isCompany)
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.white),
-                  onPressed: () {
-                    pushTo(
-                      context,
-                      Routes.addJob,
-                      extra: widget.job,
-                    );
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.white),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                        title: const Text("Delete Job"),
-                        content: const Text(
-                            "Are you sure you want to delete this job?"),
-                        actions: [
-                          TextButton(
-                            onPressed: () => pop(context),
-                            child: const Text("Cancel"),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              final cubit = context.read<JobCubit>();
+  if (isCompany) ..._buildCompanyActions(context),
+],
 
-                              Navigator.pop(context); // اقفل الدايلوج
-                              cubit.deleteJob(widget.job.jobId);
-                              Navigator.pop(context); // ارجع Total
-                            },
-                            child: const Text(
-                              "Delete",
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-        ],
       ),
       body: Column(),
     );
   }
 }
+
+
+
+
+
