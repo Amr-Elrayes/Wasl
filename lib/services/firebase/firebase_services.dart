@@ -1,17 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wasl/features/auth/models/company_model.dart';
 
 class FirestoreServices {
-  static final CollectionReference _careerCollection = FirebaseFirestore
-      .instance
-      .collection('Career');
-  static final CollectionReference _companyCollection = FirebaseFirestore
-      .instance
-      .collection('Company');
-  static final CollectionReference _jobsCollection = FirebaseFirestore
-      .instance
-      .collection('Jobs');
-
+  static final CollectionReference _careerCollection =
+      FirebaseFirestore.instance.collection('Career');
+  static final CollectionReference _companyCollection =
+      FirebaseFirestore.instance.collection('Company');
+  static final CollectionReference _jobsCollection =
+      FirebaseFirestore.instance.collection('Jobs');
 
   static Future<QuerySnapshot> filterJobsByIndustry(
     String field,
@@ -20,6 +17,7 @@ class FirestoreServices {
         .where("field", isEqualTo: field, isNull: false)
         .get();
   }
+
   static Future<QuerySnapshot> filterEmployeesByIndustry(
     String field,
   ) {
@@ -32,18 +30,24 @@ class FirestoreServices {
     return _companyCollection
         .orderBy("name")
         .where('field', isNull: false)
-        .startAt([searchKey])
-        .endAt([searchKey + '\uf8ff'])
-        .get();
+        .startAt([searchKey]).endAt([searchKey + '\uf8ff']).get();
   }
 
   static Future<String> getCompanyField() async {
-  final uid = FirebaseAuth.instance.currentUser!.uid;
+    final uid = FirebaseAuth.instance.currentUser!.uid;
 
-  final doc =
-      await FirebaseFirestore.instance.collection('Company').doc(uid).get();
+    final doc =
+        await FirebaseFirestore.instance.collection('Company').doc(uid).get();
 
-  return doc['field'];
-}
+    return doc['field'];
+  }
 
+  static Future<CompanyModel?> getCompany() async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+
+    final doc =
+        await FirebaseFirestore.instance.collection('Company').doc(uid).get();
+    if (!doc.exists) return null;
+    return CompanyModel.fromJson(doc.data() as Map<String, dynamic>);
+  }
 }

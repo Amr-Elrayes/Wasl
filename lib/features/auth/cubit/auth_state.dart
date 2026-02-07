@@ -15,3 +15,6 @@ class AuthFailureState extends AuthState {
 }
 
 class LocalListUpdatedState extends AuthState {}
+
+class AuthLogoutState extends AuthState {}
+
