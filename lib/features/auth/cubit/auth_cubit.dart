@@ -154,51 +154,66 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   updateData(File? pickedImage, usertype user) async {
-    emit(AuthLoadingState());
-    try {
-      if (pickedImage == null) {
-        emit(AuthFailureState("No image selected"));
-        return;
-      }
-      String? imgUrl = await updateImageToCloudinary(pickedImage);
+  emit(AuthLoadingState());
+
+  try {
+    String? imgUrl;
+
+    /// 🟢 لو في صورة جديدة → ارفعها
+    if (pickedImage != null) {
+      imgUrl = await updateImageToCloudinary(pickedImage);
+
       if (imgUrl == null) {
-        emit(AuthFailureState("Uplad Image Fails , try Again"));
+        emit(AuthFailureState("Upload Image Failed , Try Again"));
         return;
       }
-      if (user == usertype.Career) {
-        var careerBuilder = CareerBuilderModel(
-            uid: FirebaseAuth.instance.currentUser?.uid,
-            jobTitle: jobTitle,
-            summary: summaryController.text,
-            image: imgUrl,
-            field: Industrie,
-            isProfileCompleted: true,
-            workExperiences: workExperiences,
-            education: education,
-            certificates: certificates,
-            skills: skills);
-        await FirebaseFirestore.instance
-            .collection("Career")
-            .doc(careerBuilder.uid)
-            .update(careerBuilder.updateData());
-        emit(AuthSuccessState());
-      } else {
-        var Company = CompanyModel(
-            uid: FirebaseAuth.instance.currentUser?.uid,
-            image: imgUrl,
-            bio: bioController.text,
-            field: Industrie,
-            isProfileCompleted: true);
-        await FirebaseFirestore.instance
-            .collection("Company")
-            .doc(Company.uid)
-            .update(Company.updateData());
-        emit(AuthSuccessState());
-      }
-    } on Exception catch (_) {
-      emit(AuthFailureState("There is an Error , try again later"));
     }
+
+    /// 🔵 Career
+    if (user == usertype.Career) {
+      var careerBuilder = CareerBuilderModel(
+        uid: FirebaseAuth.instance.currentUser?.uid,
+        jobTitle: jobTitle,
+        summary: summaryController.text,
+        image: imgUrl, // ممكن تبقى null
+        field: Industrie,
+        isProfileCompleted: true,
+        workExperiences: workExperiences,
+        education: education,
+        certificates: certificates,
+        skills: skills,
+      );
+
+      await FirebaseFirestore.instance
+          .collection("Career")
+          .doc(careerBuilder.uid)
+          .update(careerBuilder.updateData());
+
+      emit(AuthSuccessState());
+    }
+
+    /// 🟣 Company
+    else {
+      var company = CompanyModel(
+        uid: FirebaseAuth.instance.currentUser?.uid,
+        image: imgUrl, // ممكن تبقى null
+        bio: bioController.text,
+        field: Industrie,
+        isProfileCompleted: true,
+      );
+
+      await FirebaseFirestore.instance
+          .collection("Company")
+          .doc(company.uid)
+          .update(company.updateData());
+
+      emit(AuthSuccessState());
+    }
+  } catch (e) {
+    emit(AuthFailureState("There is an Error , try again later"));
   }
+}
+
 
   void addListItem({
     required String section,

@@ -42,12 +42,14 @@ class FirestoreServices {
     return doc['field'];
   }
 
-  static Future<CompanyModel?> getCompany() async {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
+  static Stream<CompanyModel> getCompanyStream() {
+  final uid = FirebaseAuth.instance.currentUser!.uid;
 
-    final doc =
-        await FirebaseFirestore.instance.collection('Company').doc(uid).get();
-    if (!doc.exists) return null;
-    return CompanyModel.fromJson(doc.data() as Map<String, dynamic>);
-  }
+  return FirebaseFirestore.instance
+      .collection('Company')
+      .doc(uid)
+      .snapshots()
+      .map((doc) => CompanyModel.fromJson(doc.data()!));
+}
+
 }

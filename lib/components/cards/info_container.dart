@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:wasl/core/routes/navigation.dart';
+import 'package:wasl/core/routes/routes.dart';
 import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/core/utils/text_styles.dart';
 import 'package:wasl/features/auth/cubit/auth_cubit.dart';
@@ -97,7 +99,9 @@ class InfoContainer extends StatelessWidget {
             child: Row(
               children: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    isCompany ? pushTo(context, Routes.CompanyCompleteProfileScreen) : pushTo(context, Routes.BuilderCompleteProfileScreen);
+                  },
                   icon: const Icon(Icons.edit, color: Colors.white),
                 ),
                 IconButton(

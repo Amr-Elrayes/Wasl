@@ -32,51 +32,46 @@ class ProfileScreen extends StatelessWidget {
           }
         },
         child: Scaffold(
-          body: FutureBuilder<CompanyModel?>(
-            future: FirestoreServices.getCompany(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
+            body: StreamBuilder<CompanyModel>(
+          stream: FirestoreServices.getCompanyStream(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return CircularProgressIndicator();
+            }
 
-              if (!snapshot.hasData) {
-                return const Center(child: Text("No Company Data"));
-              }
+            final company = snapshot.data!;
 
-              final company = snapshot.data!;
-
-              return Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, top: 50),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    InfoContainer(
-                      image: company.image,
-                      name: company.name,
-                      email: company.email,
-                      field: company.field,
-                      isCompany: true,
-                    ),
-                    const Gap(40),
-                    Text(
-                      "Bio",
-                      style: TextStyles.textSize18.copyWith(
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.primaryColor),
-                    ),
-                    const Gap(10),
-                    Expanded(
-                        child: Text(
-                      company.bio!,
-                      style: TextStyles.textSize18
-                          .copyWith(fontWeight: FontWeight.w500),
-                    ))
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
+            return Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20, top: 50),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  InfoContainer(
+                    image: company.image,
+                    name: company.name,
+                    email: company.email,
+                    field: company.field,
+                    isCompany: true,
+                  ),
+                  const Gap(40),
+                  Text(
+                    "Bio",
+                    style: TextStyles.textSize18.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.primaryColor),
+                  ),
+                  const Gap(10),
+                  Expanded(
+                      child: Text(
+                    company.bio!,
+                    style: TextStyles.textSize18
+                        .copyWith(fontWeight: FontWeight.w500),
+                  ))
+                ],
+              ),
+            );
+          },
+        )),
       ),
     );
   }

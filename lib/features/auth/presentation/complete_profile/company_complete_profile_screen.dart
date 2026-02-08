@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -19,6 +21,7 @@ import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/core/utils/text_styles.dart';
 import 'package:wasl/features/auth/cubit/auth_cubit.dart';
 import 'package:wasl/features/auth/cubit/auth_state.dart';
+import 'package:wasl/features/auth/models/company_model.dart';
 
 class CompanyCompleteProfile extends StatefulWidget {
   const CompanyCompleteProfile({super.key});
@@ -28,16 +31,23 @@ class CompanyCompleteProfile extends StatefulWidget {
 }
 
 class _CompanyCompleteProfileState extends State<CompanyCompleteProfile> {
-  File? imagePath;
+  File? imageFile;
+  String? imageUrl;
+  @override
+  void initState() {
+    super.initState();
+    loadCompanyData();
+  }
 
   @override
   Widget build(BuildContext context) {
     var cubit = context.read<AuthCubit>();
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: AppColors.primaryColor,
         title: Text(
-          "Complete Your Profile",
+          imageUrl != null ?  "Update Your Profile":"Complete Your Profile",
           style: TextStyles.textSize18.copyWith(
             color: AppColors.bgColor,
           ),
@@ -50,6 +60,7 @@ class _CompanyCompleteProfileState extends State<CompanyCompleteProfile> {
           } else if (state is AuthSuccessState) {
             pop(context);
             pushAndRemoveUntil(context, Routes.Cmain);
+            showSnakBar(context, Colors.green, "Data Updated Successfully");
           } else if (state is AuthFailureState) {
             Navigator.pop(context);
             showSnakBar(context, Colors.red, state.errorMessage);
@@ -110,19 +121,22 @@ class _CompanyCompleteProfileState extends State<CompanyCompleteProfile> {
                             backgroundColor:
                                 AppColors.grayColor.withOpacity(0.4),
                             child: ClipOval(
-                              child: imagePath != null
-                                  ? Image.file(
-                                      imagePath!,
+                              child: imageFile != null
+                                  ? Image.file(imageFile!,
+                                      fit: BoxFit.cover,
                                       width: 140,
-                                      height: 140,
-                                      fit: BoxFit.contain,
-                                    )
-                                  : Image.asset(
-                                      AppImages.person,
-                                      width: 120,
-                                      height: 120,
-                                      fit: BoxFit.contain,
-                                    ),
+                                      height: 140)
+                                  : imageUrl != null && imageUrl!.isNotEmpty
+                                      ? Image.network(imageUrl!,
+                                          fit: BoxFit.cover,
+                                          width: 140,
+                                          height: 140)
+                                      : Image.asset(
+                                          AppImages.person,
+                                          fit: BoxFit.cover,
+                                          width: 120,
+                                          height: 120,
+                                        ),
                             ),
                           ),
                           Positioned(
@@ -215,12 +229,12 @@ class _CompanyCompleteProfileState extends State<CompanyCompleteProfile> {
               txt: "Done",
               onPressed: () async {
                 if (cubit.formKey.currentState!.validate()) {
-                  if (imagePath != null) {
-                    cubit.updateData(imagePath, usertype.Company);
-                  } else {
-                    showSnakBar(
-                        context, AppColors.redColor, "Please Upload an Image");
-                  }
+if (imageFile != null || (imageUrl != null && imageUrl!.isNotEmpty)) {
+  cubit.updateData(imageFile, usertype.Company);
+} else {
+  showSnakBar(context, AppColors.redColor, "Please Upload an Image");
+}
+
                 }
               },
             ),
@@ -236,8 +250,29 @@ class _CompanyCompleteProfileState extends State<CompanyCompleteProfile> {
     );
     if (file != null) {
       setState(() {
-        imagePath = File(file.path);
+        imageFile = File(file.path);
       });
     }
+  }
+
+  Future<void> loadCompanyData() async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+
+    final doc =
+        await FirebaseFirestore.instance.collection("Company").doc(uid).get();
+
+    if (!doc.exists) return;
+
+    final company = CompanyModel.fromJson(doc.data()!);
+
+    final cubit = context.read<AuthCubit>();
+
+    cubit.nameController.text = company.name ?? "";
+    cubit.emailController.text = company.email ?? "";
+    cubit.bioController.text = company.bio ?? "";
+    cubit.Industrie = company.field;
+    imageUrl = company.image;
+
+    setState(() {}); // علشان Dropdown يتحدث
   }
 }
