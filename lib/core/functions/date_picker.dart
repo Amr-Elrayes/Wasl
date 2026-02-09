@@ -4,12 +4,13 @@ import 'package:intl/intl.dart';
 Future<void> pickMonthYearWithDatePicker(
   BuildContext context,
   TextEditingController controller,
+  DateTime firstDate
 ) async {
   final DateTime? picked = await showDatePicker(
     context: context,
     useRootNavigator: true,
     initialDate: DateTime.now(),
-    firstDate: DateTime(2000),
+    firstDate: firstDate,
     lastDate: DateTime.now(),
     initialDatePickerMode: DatePickerMode.year,
   );

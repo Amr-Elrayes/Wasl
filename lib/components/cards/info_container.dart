@@ -93,48 +93,52 @@ class InfoContainer extends StatelessWidget {
           ),
 
           /// Actions
-          Positioned(
-            top: 0,
-            right: 0,
-            child: Row(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    isCompany ? pushTo(context, Routes.CompanyCompleteProfileScreen) : pushTo(context, Routes.BuilderCompleteProfileScreen);
-                  },
-                  icon: const Icon(Icons.edit, color: Colors.white),
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.logout,
-                    color: Colors.white,
+          if (isCompany)
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      isCompany
+                          ? pushTo(context, Routes.CompanyCompleteProfileScreen)
+                          : pushTo(
+                              context, Routes.BuilderCompleteProfileScreen);
+                    },
+                    icon: const Icon(Icons.edit, color: Colors.white),
                   ),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                        title: Text("Logout"),
-                        content: Text("Are you sure?"),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text("Cancel"),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              context.read<AuthCubit>().logout();
-                              Navigator.pop(context);
-                            },
-                            child: Text("Logout"),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                )
-              ],
+                  IconButton(
+                    icon: Icon(
+                      Icons.logout,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          title: Text("Logout"),
+                          content: Text("Are you sure?"),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text("Cancel"),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                context.read<AuthCubit>().logout();
+                                Navigator.pop(context);
+                              },
+                              child: Text("Logout"),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  )
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );

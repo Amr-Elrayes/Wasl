@@ -42,10 +42,13 @@ class JobCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(job.description!,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyles.textSize15
-                        .copyWith(color: AppColors.softgrayColor)),
+                Expanded(
+                  child: Text(job.description!,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyles.textSize15
+                          .copyWith(color: AppColors.softgrayColor)),
+                ),
+                const Gap(40),
                 Text(
                   job.status,
                   style: TextStyles.textSize15.copyWith(

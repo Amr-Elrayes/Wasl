@@ -29,55 +29,61 @@ class IndusrtyEmployee extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        body: FutureBuilder<String>(
-          future: FirestoreServices.getCompanyField(),
-          builder: (context, fieldSnapshot) {
-            if (!fieldSnapshot.hasData) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-
-            final companyField = fieldSnapshot.data!;
-
-            return FutureBuilder<QuerySnapshot>(
-              future: FirestoreServices.filterEmployeesByIndustry(companyField),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                if (snapshot.data!.docs.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Lottie.asset(AppImages.noData, width: 160, height: 160),
-                        Text(
-                          "No Employees In Your Indusrty",
-                          style: TextStyles.textSize15,
-                        )
-                      ],
-                    ),
-                  );
-                }
-                return ListView.separated(
-                  separatorBuilder: (_, __) =>
-                      const Divider(color: AppColors.grayColor),
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: snapshot.data!.docs.length,
-                  itemBuilder: (context, index) {
-                    final employee = CareerBuilderModel.fromJson(
-                      snapshot.data!.docs[index].data() as Map<String, dynamic>,
-                    );
-                    return EmplpyeeCard(employee: employee);
-                  },
+        body: Padding(
+          padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
+          child: FutureBuilder<String>(
+            future: FirestoreServices.getCompanyField(),
+            builder: (context, fieldSnapshot) {
+              if (!fieldSnapshot.hasData) {
+                return const Center(
+                  child: CircularProgressIndicator(),
                 );
-              },
-            );
-          },
+              }
+
+              final companyField = fieldSnapshot.data!;
+
+              return FutureBuilder<QuerySnapshot>(
+                future:
+                    FirestoreServices.filterEmployeesByIndustry(companyField),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (snapshot.data!.docs.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Lottie.asset(AppImages.noData,
+                              width: 160, height: 160),
+                          Text(
+                            "No Employees In Your Indusrty",
+                            style: TextStyles.textSize15,
+                          )
+                        ],
+                      ),
+                    );
+                  }
+                  return ListView.separated(
+                    separatorBuilder: (_, __) =>
+                        const Divider(color: AppColors.grayColor),
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      final employee = CareerBuilderModel.fromJson(
+                        snapshot.data!.docs[index].data()
+                            as Map<String, dynamic>,
+                      );
+                      return EmplpyeeCard(employee: employee);
+                    },
+                  );
+                },
+              );
+            },
+          ),
         ));
   }
 }
