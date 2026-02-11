@@ -6,6 +6,7 @@ import 'package:wasl/components/cards/job_card.dart';
 import 'package:wasl/core/constants/app_images.dart';
 import 'package:wasl/core/job/models/job_model.dart';
 import 'package:wasl/core/routes/navigation.dart';
+import 'package:wasl/core/routes/routes.dart';
 import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/core/utils/text_styles.dart';
 import 'package:wasl/features/auth/models/career_builder_model.dart';
@@ -39,8 +40,8 @@ class AllItemsScreen extends StatelessWidget {
                 : FirestoreServices.getUserTitle(),
             builder: (context, fieldSnapshot) {
               if (!fieldSnapshot.hasData || fieldSnapshot.data!.isEmpty) {
-  return Center(child: Text("No Data Found"));
-}
+                return Center(child: Text("No Data Found"));
+              }
               if (!fieldSnapshot.hasData) {
                 return const Center(
                   child: CircularProgressIndicator(),
@@ -83,22 +84,33 @@ class AllItemsScreen extends StatelessWidget {
                     shrinkWrap: true,
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
-if (title.startsWith("Employees")) {
-  final employee = CareerBuilderModel.fromJson(
-    snapshot.data!.docs[index].data() as Map<String, dynamic>,
-  );
+                      if (title.startsWith("Employees")) {
+                        final employee = CareerBuilderModel.fromJson(
+                          snapshot.data!.docs[index].data()
+                              as Map<String, dynamic>,
+                        );
 
-  return EmplpyeeCard(employee: employee);
-} else {
-  final job = JobModel.fromJson(
-    snapshot.data!.docs[index].data() as Map<String, dynamic>,
-  );
+                        return EmplpyeeCard(employee: employee);
+                      } else {
+                        final job = JobModel.fromJson(
+                          snapshot.data!.docs[index].data()
+                              as Map<String, dynamic>,
+                        );
 
-  return JobCard(
-    job: job,
-    onTap: () {},
-  );
-}
+                        return JobCard(
+                          job: job,
+                          onTap: () {
+                            pushTo(
+                              context,
+                              Routes.JobDetailsScreen,
+                              extra: {
+                                "job": job,
+                                "isUser": true,
+                              },
+                            );
+                          },
+                        );
+                      }
                     },
                   );
                 },

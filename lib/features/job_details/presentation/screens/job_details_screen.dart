@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:wasl/components/buttons/custom_buttom.dart';
 import 'package:wasl/core/job/cubit/job_cubit.dart';
 import 'package:wasl/core/job/models/job_model.dart';
 import 'package:wasl/core/routes/navigation.dart';
@@ -12,9 +13,9 @@ import 'package:wasl/core/utils/text_styles.dart';
 import 'package:wasl/features/company/home/presentation/widgets/skills_wrap.dart';
 
 class jobDetailsScreen extends StatefulWidget {
-  const jobDetailsScreen({super.key, required this.job});
+  const jobDetailsScreen({super.key, required this.job, required this.isUser});
   final JobModel job;
-
+  final bool isUser;
   @override
   State<jobDetailsScreen> createState() => _jobDetailsScreenState();
 }
@@ -174,6 +175,19 @@ class _jobDetailsScreenState extends State<jobDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: widget.isUser
+          ? Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: customButtom(
+                txt: "Apply",
+                onPressed: () {},
+              ),
+            )
+          : const SizedBox(),
       appBar: AppBar(
         title: Text(
           widget.job.title!,

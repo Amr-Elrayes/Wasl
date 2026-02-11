@@ -4,6 +4,8 @@ import 'package:lottie/lottie.dart';
 import 'package:wasl/components/cards/job_card.dart';
 import 'package:wasl/core/constants/app_images.dart';
 import 'package:wasl/core/job/models/job_model.dart';
+import 'package:wasl/core/routes/navigation.dart';
+import 'package:wasl/core/routes/routes.dart';
 import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/core/utils/text_styles.dart';
 import 'package:wasl/services/firebase/firebase_services.dart';
@@ -57,7 +59,16 @@ class JobsInIndustry extends StatelessWidget {
                 );
                 return JobCard(
                   job: job,
-                  onTap: () {},
+                  onTap: () {
+                    pushTo(
+                      context,
+                      Routes.JobDetailsScreen,
+                      extra: {
+                        "job": job,
+                        "isUser": true,
+                      },
+                    );
+                  },
                 );
               },
             );

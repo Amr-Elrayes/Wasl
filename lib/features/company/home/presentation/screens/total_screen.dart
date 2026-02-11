@@ -57,7 +57,7 @@ class _TotalScreenState extends State<TotalScreen> {
             if (state is JobLoadingState) {
               return const Center(child: CircularProgressIndicator());
             }
-        
+
             if (state is JobListLoadedState) {
               if (state.jobs.isEmpty) {
                 return Center(
@@ -73,7 +73,7 @@ class _TotalScreenState extends State<TotalScreen> {
                   ),
                 );
               }
-        
+
               return ListView.separated(
                 padding: const EdgeInsets.all(16),
                 itemCount: state.jobs.length,
@@ -84,18 +84,18 @@ class _TotalScreenState extends State<TotalScreen> {
                     onTap: () {
                       pushTo(context, Routes.JobDetailsScreen, extra: {
                         "job": state.jobs[index],
-                        "cubit": jobCubit,
+                        "isUser": false
                       });
                     },
                   );
                 },
               );
             }
-        
+
             if (state is JobFailureState) {
               return Center(child: Text(state.errorMessage));
             }
-        
+
             return const SizedBox();
           },
         ));

@@ -149,19 +149,20 @@ class Routes {
           );
         },
       ),
-      GoRoute(
-        path: Routes.JobDetailsScreen,
-        builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>; // extra دلوقتي Map
-          final JobModel job = extra['job'] as JobModel; // خده من الـ Map
-          final jobCubit = extra['cubit'] as JobCubit;
+GoRoute(
+  path: Routes.JobDetailsScreen,
+  builder: (context, state) {
+    final extra = state.extra as Map<String, dynamic>;
+    final JobModel job = extra['job'] as JobModel;
+    final bool isUser = extra['isUser'] as bool;
 
-          return BlocProvider.value(
-            value: jobCubit,
-            child: jobDetailsScreen(job: job),
-          );
-        },
-      ),
+    return jobDetailsScreen(
+      job: job,
+      isUser: isUser,
+    );
+  },
+),
+
       GoRoute(
         path: addJob,
         builder: (context, state) {
