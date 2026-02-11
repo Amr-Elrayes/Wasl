@@ -37,7 +37,7 @@ void initState() {
     ),
     const AddJobSreen(),
     const RequestesScreen(),
-    const ProfileScreen(),
+    const ProfileScreen(canEdit: true,),
   ];
 }
 

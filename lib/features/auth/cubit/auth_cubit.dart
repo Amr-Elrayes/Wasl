@@ -9,7 +9,7 @@ import 'package:wasl/core/functions/upload_image.dart';
 import 'package:wasl/features/auth/cubit/auth_state.dart';
 import 'package:wasl/features/auth/models/career_builder_model.dart';
 import 'package:wasl/features/auth/models/company_model.dart';
-import 'package:wasl/features/auth/models/listtile_item_model.dart';
+import 'package:wasl/core/job/models/list_item_model.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthInitialState());
@@ -20,10 +20,10 @@ class AuthCubit extends Cubit<AuthState> {
   var confirmpasswordController = TextEditingController();
   var summaryController = TextEditingController();
   var bioController = TextEditingController();
-  List<ListTileItemModel> workExperiences = [];
-  List<ListTileItemModel> education = [];
-  List<ListTileItemModel> certificates = [];
-  List<ListTileItemModel> skills = [];
+  List<ListItemModel> workExperiences = [];
+  List<ListItemModel> education = [];
+  List<ListItemModel> certificates = [];
+  List<ListItemModel> skills = [];
   usertype? selectedUserType;
   String? Industrie;
   String? jobTitle;
@@ -112,17 +112,16 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> logout() async {
-  emit(AuthLoadingState());
+    emit(AuthLoadingState());
 
-  try {
-    await FirebaseAuth.instance.signOut();
+    try {
+      await FirebaseAuth.instance.signOut();
 
-    emit(AuthLogoutState());
-  } catch (e) {
-    emit(AuthFailureState("Logout Failed"));
+      emit(AuthLogoutState());
+    } catch (e) {
+      emit(AuthFailureState("Logout Failed"));
+    }
   }
-}
-
 
   Future<String?> _getUserType(String uid) async {
     final collections = ['Career', 'Company'];
@@ -138,7 +137,7 @@ class AuthCubit extends Cubit<AuthState> {
     return null;
   }
 
-  Future<List<ListTileItemModel>> getListFromProfile({
+  Future<List<ListItemModel>> getListFromProfile({
     required String fieldName,
   }) async {
     final uid = FirebaseAuth.instance.currentUser!.uid;
@@ -148,72 +147,71 @@ class AuthCubit extends Cubit<AuthState> {
 
     final list = doc.data()?[fieldName] ?? [];
 
-    return List<ListTileItemModel>.from(
-      list.map((e) => ListTileItemModel.fromJson(e)),
+    return List<ListItemModel>.from(
+      list.map((e) => ListItemModel.fromJson(e)),
     );
   }
 
   updateData(File? pickedImage, usertype user) async {
-  emit(AuthLoadingState());
+    emit(AuthLoadingState());
 
-  try {
-    String? imgUrl;
+    try {
+      String? imgUrl;
 
-    /// 🟢 لو في صورة جديدة → ارفعها
-    if (pickedImage != null) {
-      imgUrl = await updateImageToCloudinary(pickedImage);
+      /// 🟢 لو في صورة جديدة → ارفعها
+      if (pickedImage != null) {
+        imgUrl = await updateImageToCloudinary(pickedImage);
 
-      if (imgUrl == null) {
-        emit(AuthFailureState("Upload Image Failed , Try Again"));
-        return;
+        if (imgUrl == null) {
+          emit(AuthFailureState("Upload Image Failed , Try Again"));
+          return;
+        }
       }
+
+      /// 🔵 Career
+      if (user == usertype.Career) {
+        var careerBuilder = CareerBuilderModel(
+          uid: FirebaseAuth.instance.currentUser?.uid,
+          jobTitle: jobTitle,
+          summary: summaryController.text,
+          image: imgUrl, // ممكن تبقى null
+          field: Industrie,
+          isProfileCompleted: true,
+          workExperiences: workExperiences,
+          education: education,
+          certificates: certificates,
+          skills: skills,
+        );
+
+        await FirebaseFirestore.instance
+            .collection("Career")
+            .doc(careerBuilder.uid)
+            .update(careerBuilder.updateData());
+
+        emit(AuthSuccessState());
+      }
+
+      /// 🟣 Company
+      else {
+        var company = CompanyModel(
+          uid: FirebaseAuth.instance.currentUser?.uid,
+          image: imgUrl, // ممكن تبقى null
+          bio: bioController.text,
+          field: Industrie,
+          isProfileCompleted: true,
+        );
+
+        await FirebaseFirestore.instance
+            .collection("Company")
+            .doc(company.uid)
+            .update(company.updateData());
+
+        emit(AuthSuccessState());
+      }
+    } catch (e) {
+      emit(AuthFailureState("There is an Error , try again later"));
     }
-
-    /// 🔵 Career
-    if (user == usertype.Career) {
-      var careerBuilder = CareerBuilderModel(
-        uid: FirebaseAuth.instance.currentUser?.uid,
-        jobTitle: jobTitle,
-        summary: summaryController.text,
-        image: imgUrl, // ممكن تبقى null
-        field: Industrie,
-        isProfileCompleted: true,
-        workExperiences: workExperiences,
-        education: education,
-        certificates: certificates,
-        skills: skills,
-      );
-
-      await FirebaseFirestore.instance
-          .collection("Career")
-          .doc(careerBuilder.uid)
-          .update(careerBuilder.updateData());
-
-      emit(AuthSuccessState());
-    }
-
-    /// 🟣 Company
-    else {
-      var company = CompanyModel(
-        uid: FirebaseAuth.instance.currentUser?.uid,
-        image: imgUrl, // ممكن تبقى null
-        bio: bioController.text,
-        field: Industrie,
-        isProfileCompleted: true,
-      );
-
-      await FirebaseFirestore.instance
-          .collection("Company")
-          .doc(company.uid)
-          .update(company.updateData());
-
-      emit(AuthSuccessState());
-    }
-  } catch (e) {
-    emit(AuthFailureState("There is an Error , try again later"));
   }
-}
-
 
   void addListItem({
     required String section,
@@ -222,7 +220,7 @@ class AuthCubit extends Cubit<AuthState> {
     String? startDate,
     String? endDate,
   }) {
-    final item = ListTileItemModel(
+    final item = ListItemModel(
       name: name.trim(),
       location: location?.trim(),
       startDate: startDate?.trim(),

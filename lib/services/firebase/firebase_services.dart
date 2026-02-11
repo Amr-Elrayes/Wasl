@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wasl/features/auth/models/career_builder_model.dart';
 import 'package:wasl/features/auth/models/company_model.dart';
 
 class FirestoreServices {
@@ -8,14 +9,14 @@ class FirestoreServices {
   static final CollectionReference _companyCollection =
       FirebaseFirestore.instance.collection('Company');
   static final CollectionReference _jobsCollection =
-      FirebaseFirestore.instance.collection('Jobs');
+      FirebaseFirestore.instance.collection('jobs');
 
-  static Future<QuerySnapshot> filterJobsByIndustry(
-    String field,
-  ) {
-    return _jobsCollection
-        .where("field", isEqualTo: field, isNull: false)
-        .get();
+  static Future<QuerySnapshot> filterJobsByTitle(
+    String title,
+  ) async {
+    final result = await _jobsCollection.where("title", isEqualTo: title).get();
+
+    return result;
   }
 
   static Future<QuerySnapshot> filterEmployeesByIndustry(
@@ -39,17 +40,35 @@ class FirestoreServices {
     final doc =
         await FirebaseFirestore.instance.collection('Company').doc(uid).get();
 
-    return doc['field'];
+    return doc.data()?['field'] ?? "";
+  }
+
+  static Future<String> getUserTitle() async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+
+    final doc =
+        await FirebaseFirestore.instance.collection('Career').doc(uid).get();
+
+    return doc.data()?['jobTitle'] ?? "";
   }
 
   static Stream<CompanyModel> getCompanyStream() {
-  final uid = FirebaseAuth.instance.currentUser!.uid;
+    final uid = FirebaseAuth.instance.currentUser!.uid;
 
-  return FirebaseFirestore.instance
-      .collection('Company')
-      .doc(uid)
-      .snapshots()
-      .map((doc) => CompanyModel.fromJson(doc.data()!));
-}
+    return FirebaseFirestore.instance
+        .collection('Company')
+        .doc(uid)
+        .snapshots()
+        .map((doc) => CompanyModel.fromJson(doc.data()!));
+  }
 
+  static Stream<CareerBuilderModel> getCareerStream() {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+
+    return FirebaseFirestore.instance
+        .collection('Career')
+        .doc(uid)
+        .snapshots()
+        .map((doc) => CareerBuilderModel.fromJson(doc.data()!));
+  }
 }

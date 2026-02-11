@@ -14,10 +14,10 @@ import 'package:wasl/features/auth/cubit/auth_state.dart';
 import 'package:wasl/features/auth/models/career_builder_model.dart';
 import 'package:wasl/features/career/profile/presentation/widgets/list_item.dart';
 import 'package:wasl/features/career/profile/presentation/widgets/skills_wrap.dart';
-import 'package:wasl/services/firebase/firebase_services.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key, required this.canEdit});
+class ProfileFromCompany extends StatelessWidget {
+  const ProfileFromCompany({super.key, this.user, required this.canEdit});
+  final CareerBuilderModel? user;
   final bool canEdit;
   @override
   Widget build(BuildContext context) {
@@ -33,19 +33,10 @@ class ProfileScreen extends StatelessWidget {
         }
       },
       child: Scaffold(
-        body: StreamBuilder<CareerBuilderModel>(
-          stream: FirestoreServices.getCareerStream(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            return _ProfileBody(
-              user: snapshot.data!,
-              canEdit: canEdit,
-            );
-          },
-        ),
-      ),
+          body: _ProfileBody(
+        user: user!,
+        canEdit: canEdit,
+      )),
     );
   }
 }

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:wasl/core/routes/navigation.dart';
 import 'package:wasl/core/routes/routes.dart';
 import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/core/utils/text_styles.dart';
-import 'package:wasl/features/auth/cubit/auth_cubit.dart';
 
 class InfoContainer extends StatelessWidget {
   const InfoContainer({
@@ -15,6 +13,8 @@ class InfoContainer extends StatelessWidget {
     required this.email,
     required this.field,
     required this.isCompany,
+    required this.canEdit,
+    this.onLogout,
   });
 
   final String? name;
@@ -22,6 +22,8 @@ class InfoContainer extends StatelessWidget {
   final String? email;
   final String? field;
   final bool isCompany;
+  final bool canEdit;
+  final VoidCallback? onLogout;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +36,7 @@ class InfoContainer extends StatelessWidget {
       padding: const EdgeInsets.only(left: 15, top: 15, bottom: 20),
       child: Stack(
         children: [
+          /// content
           Column(
             children: [
               Row(
@@ -44,10 +47,7 @@ class InfoContainer extends StatelessWidget {
                       height: 120,
                       width: 120,
                       color: Colors.white,
-                      child: Image.network(
-                        image ?? "",
-                        fit: BoxFit.contain,
-                      ),
+                      child: Image.network(image ?? ""),
                     ),
                   ),
                   const Gap(20),
@@ -63,10 +63,7 @@ class InfoContainer extends StatelessWidget {
               const Gap(20),
               Row(
                 children: [
-                  Icon(
-                    Icons.work,
-                    color: Colors.white,
-                  ),
+                  const Icon(Icons.work, color: Colors.white),
                   const Gap(5),
                   Text(
                     field ?? "",
@@ -92,8 +89,8 @@ class InfoContainer extends StatelessWidget {
             ],
           ),
 
-          /// Actions
-          if (isCompany)
+          /// actions
+          if (canEdit)
             Positioned(
               top: 0,
               right: 0,
@@ -109,33 +106,9 @@ class InfoContainer extends StatelessWidget {
                     icon: const Icon(Icons.edit, color: Colors.white),
                   ),
                   IconButton(
-                    icon: Icon(
-                      Icons.logout,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (_) => AlertDialog(
-                          title: Text("Logout"),
-                          content: Text("Are you sure?"),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text("Cancel"),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                context.read<AuthCubit>().logout();
-                                Navigator.pop(context);
-                              },
-                              child: Text("Logout"),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  )
+                    icon: const Icon(Icons.logout, color: Colors.white),
+                    onPressed: onLogout,
+                  ),
                 ],
               ),
             ),
@@ -144,3 +117,4 @@ class InfoContainer extends StatelessWidget {
     );
   }
 }
+

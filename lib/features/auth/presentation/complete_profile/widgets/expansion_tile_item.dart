@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/core/utils/text_styles.dart';
-import 'package:wasl/features/auth/models/listtile_item_model.dart';
+import 'package:wasl/core/job/models/list_item_model.dart';
 
 class ExpansionTileItem extends StatelessWidget {
   const ExpansionTileItem({super.key, required this.model});
-  final ListTileItemModel model;
+  final ListItemModel model;
   @override
   Widget build(BuildContext context) {
     return Container(

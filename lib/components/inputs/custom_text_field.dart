@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:wasl/core/utils/colors.dart';
 
 // ignore: must_be_immutable
@@ -15,6 +16,7 @@ class customTextformfield extends StatelessWidget {
     this.readonly = false,
     this.textAlign = TextAlign.start,
     this.keyboardType = TextInputType.text,
+    this.inputFormatters
   });
   final String? hintText;
   final String? Function(String?)? validator;
@@ -26,11 +28,13 @@ class customTextformfield extends StatelessWidget {
   bool readonly;
   TextAlign textAlign;
   TextInputType keyboardType;
+  List<TextInputFormatter>? inputFormatters;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       autovalidateMode: AutovalidateMode.onUserInteraction,
       keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
       textAlign: textAlign,
       readOnly: readonly,
       onTap: ontap,

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/core/utils/text_styles.dart';
 import 'package:wasl/features/auth/cubit/auth_cubit.dart';
-import 'package:wasl/features/auth/models/listtile_item_model.dart';
+import 'package:wasl/core/job/models/list_item_model.dart';
 import 'package:wasl/features/auth/presentation/complete_profile/widgets/bottomsheet_content.dart';
 import 'package:wasl/features/auth/presentation/complete_profile/widgets/expansion_tile_item.dart';
 import 'package:wasl/features/auth/presentation/complete_profile/widgets/skills_bottom_sheet_content.dart';
@@ -18,8 +18,8 @@ class ExpansionTileWidget extends StatefulWidget {
   });
 
   final String title;
-  final List<ListTileItemModel> items;
-  final Function(ListTileItemModel) onAdd;
+  final List<ListItemModel> items;
+  final Function(ListItemModel) onAdd;
   final Function(int index) onDelete;
 
   @override

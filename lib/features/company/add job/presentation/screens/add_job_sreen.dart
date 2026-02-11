@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -15,7 +16,7 @@ import 'package:wasl/core/routes/navigation.dart';
 import 'package:wasl/core/routes/routes.dart';
 import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/core/utils/text_styles.dart';
-import 'package:wasl/features/auth/models/listtile_item_model.dart';
+import 'package:wasl/core/job/models/list_item_model.dart';
 import 'package:wasl/features/company/add%20job/presentation/widgets/addjob_expansion_tile_widget.dart';
 
 class AddJobSreen extends StatefulWidget {
@@ -28,7 +29,7 @@ class AddJobSreen extends StatefulWidget {
 }
 
 class _AddJobSreenState extends State<AddJobSreen> {
-  List<ListTileItemModel> skills = [];
+  List<ListItemModel> skills = [];
   @override
   void initState() {
     super.initState();
@@ -48,7 +49,7 @@ class _AddJobSreenState extends State<AddJobSreen> {
           Joblocation.values.firstWhere((e) => e.name == job.location);
 
       /// ⭐⭐ المهم هنا ⭐⭐
-      skills = List<ListTileItemModel>.from(job.reqSkills ?? []);
+      skills = List<ListItemModel>.from(job.reqSkills ?? []);
     } else {
       cubit.clearForm();
       skills.clear();
@@ -252,9 +253,16 @@ class _AddJobSreenState extends State<AddJobSreen> {
                           controller: cubit.salaryController,
                           hintText: "Add Job Salary",
                           keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter
+                                .digitsOnly, // ✅ يمنع أي حرف
+                          ],
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return "Please Enter Job Salary";
+                            }
+                            if (!RegExp(r'^[1-9]\d*$').hasMatch(value)) {
+                              return "Salary must be a number greater than 0";
                             }
                             return null;
                           },

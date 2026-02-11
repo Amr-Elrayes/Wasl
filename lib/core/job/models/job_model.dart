@@ -1,17 +1,18 @@
 import 'package:wasl/features/auth/models/career_builder_model.dart';
-import 'package:wasl/features/auth/models/listtile_item_model.dart';
+import 'package:wasl/core/job/models/list_item_model.dart';
 
 class JobModel {
-  final String jobId; 
+  final String jobId;
   final String? title;
   final String? company;
+  final String? companyImg;
   final String? location;
   final String? type;
   final double? salary;
   final String? description;
   final String status;
   final String? requirments;
-  final List<ListTileItemModel>? reqSkills;
+  final List<ListItemModel>? reqSkills;
   final List<CareerBuilderModel>? applications;
 
   JobModel({
@@ -25,6 +26,7 @@ class JobModel {
     this.reqSkills,
     this.title,
     this.company,
+    this.companyImg,
     this.applications,
   });
 
@@ -33,6 +35,7 @@ class JobModel {
       jobId: json['jobId'],
       title: json['title'],
       company: json['company'],
+      companyImg: json['companyImg'],
       location: json['location'],
       type: json['type'],
       salary: json['salary'],
@@ -40,7 +43,7 @@ class JobModel {
       requirments: json['requirments'],
       status: json['status'],
       reqSkills: (json['reqSkills'] as List<dynamic>? ?? [])
-          .map((e) => ListTileItemModel.fromJson(e))
+          .map((e) => ListItemModel.fromJson(e))
           .toList(),
       applications: (json['applications'] as List<dynamic>? ?? [])
           .map((e) => CareerBuilderModel.fromJson(e))
@@ -52,6 +55,7 @@ class JobModel {
         'jobId': jobId,
         'title': title,
         'company': company,
+        'companyImg': companyImg,
         'location': location,
         'type': type,
         'salary': salary,

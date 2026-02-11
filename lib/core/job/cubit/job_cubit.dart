@@ -5,7 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wasl/core/constants/enums.dart';
 import 'package:wasl/core/job/cubit/job_state.dart';
 import 'package:wasl/core/job/models/job_model.dart';
-import 'package:wasl/features/auth/models/listtile_item_model.dart';
+import 'package:wasl/features/auth/models/company_model.dart';
+import 'package:wasl/core/job/models/list_item_model.dart';
 
 class JobCubit extends Cubit<JobState> {
   JobCubit() : super(JobInitialState());
@@ -13,7 +14,7 @@ class JobCubit extends Cubit<JobState> {
   var describtionController = TextEditingController();
   var requirmentsController = TextEditingController();
   var salaryController = TextEditingController();
-  List<ListTileItemModel> reqskills = [];
+  List<ListItemModel> reqskills = [];
   String? title;
   Jobtype? jobType;
   Joblocation? jobLocation;
@@ -30,12 +31,18 @@ class JobCubit extends Cubit<JobState> {
       /// 1- generate jobId
       final jobDoc = FirebaseFirestore.instance.collection('jobs').doc();
       final jobId = jobDoc.id;
+      final companyDoc =
+          FirebaseFirestore.instance.collection('Company').doc(companyId);
+      final companySnapshot = await companyDoc.get();
+      final Company =
+          CompanyModel.fromJson(companySnapshot.data() as Map<String, dynamic>);
 
       /// 2- create job model
       final job = JobModel(
         jobId: jobId,
         title: title,
         company: FirebaseAuth.instance.currentUser?.displayName,
+        companyImg: Company.image,
         location: jobLocation?.name,
         type: jobType?.name,
         salary: double.tryParse(salaryController.text),
@@ -51,9 +58,6 @@ class JobCubit extends Cubit<JobState> {
       batch.set(jobDoc, job.toJson());
 
       /// 5- company document
-      final companyDoc =
-          FirebaseFirestore.instance.collection('Company').doc(companyId);
-
       batch.update(companyDoc, {
         'uploadedJobs': FieldValue.arrayUnion([job.toJson()]),
         'activeJobs': FieldValue.arrayUnion([job.toJson()]),
@@ -126,231 +130,211 @@ class JobCubit extends Cubit<JobState> {
   }
 
   Future<void> updateJob({
-  required String companyId,
-  required String jobId,
-}) async {
-  try {
-    emit(JobLoadingState());
+    required String companyId,
+    required String jobId,
+  }) async {
+    try {
+      emit(JobLoadingState());
 
-    final updatedJob = JobModel(
-      jobId: jobId,
-      title: title,
-      company: FirebaseAuth.instance.currentUser?.displayName,
-      location: jobLocation?.name,
-      type: jobType?.name,
-      salary: double.tryParse(salaryController.text),
-      description: describtionController.text,
-      requirments: requirmentsController.text,
-      reqSkills: reqskills,
-      status: "Active",
-    );
+      final updatedJob = JobModel(
+        jobId: jobId,
+        title: title,
+        company: FirebaseAuth.instance.currentUser?.displayName,
+        location: jobLocation?.name,
+        type: jobType?.name,
+        salary: double.tryParse(salaryController.text),
+        description: describtionController.text,
+        requirments: requirmentsController.text,
+        reqSkills: reqskills,
+        status: "Active",
+      );
 
-    final companyDoc =
-        FirebaseFirestore.instance.collection('Company').doc(companyId);
+      final companyDoc =
+          FirebaseFirestore.instance.collection('Company').doc(companyId);
 
-    final snapshot = await companyDoc.get();
-    final data = snapshot.data()!;
+      final snapshot = await companyDoc.get();
+      final data = snapshot.data()!;
 
-    List uploadedJobs = List.from(data['uploadedJobs'] ?? []);
-    List activeJobs = List.from(data['activeJobs'] ?? []);
-    List terminatedJobs = List.from(data['terminatedJobs'] ?? []);
+      List uploadedJobs = List.from(data['uploadedJobs'] ?? []);
+      List activeJobs = List.from(data['activeJobs'] ?? []);
+      List terminatedJobs = List.from(data['terminatedJobs'] ?? []);
 
-    List updateList(List list) {
-      final index = list.indexWhere((j) => j['jobId'] == jobId);
-      if (index != -1) {
-        list[index] = updatedJob.toJson();
+      List updateList(List list) {
+        final index = list.indexWhere((j) => j['jobId'] == jobId);
+        if (index != -1) {
+          list[index] = updatedJob.toJson();
+        }
+        return list;
       }
-      return list;
+
+      uploadedJobs = updateList(uploadedJobs);
+      activeJobs = updateList(activeJobs);
+      terminatedJobs = updateList(terminatedJobs);
+
+      await companyDoc.update({
+        'uploadedJobs': uploadedJobs,
+        'activeJobs': activeJobs,
+        'terminatedJobs': terminatedJobs,
+      });
+
+      // تحديث الـ document في collection jobs
+      final jobDocRef =
+          FirebaseFirestore.instance.collection('jobs').doc(jobId);
+
+      final jobSnapshot = await jobDocRef.get();
+      if (jobSnapshot.exists) {
+        await jobDocRef.update(updatedJob.toJson());
+      }
+
+      // نحدث الـ Cubit لو إحنا في TotalScreen (مش HomeScreen)
+      if (_currentListType != null) {
+        _currentJobs = _currentJobs.map((job) {
+          if (job.jobId == jobId) return updatedJob;
+          return job;
+        }).toList();
+
+        emit(JobListLoadedState(_currentJobs));
+      } else {
+        emit(JobSuccessState()); // مجرد نجاح لو مش في TotalScreen
+      }
+    } catch (e) {
+      emit(JobFailureState(e.toString()));
     }
+  }
 
-    uploadedJobs = updateList(uploadedJobs);
-    activeJobs = updateList(activeJobs);
-    terminatedJobs = updateList(terminatedJobs);
+  Future<void> terminateJobFromActive(String jobId) async {
+    try {
+      emit(JobLoadingState());
 
-    await companyDoc.update({
-      'uploadedJobs': uploadedJobs,
-      'activeJobs': activeJobs,
-      'terminatedJobs': terminatedJobs,
-    });
+      final companyId = FirebaseAuth.instance.currentUser!.uid;
+      final companyDoc =
+          FirebaseFirestore.instance.collection('Company').doc(companyId);
 
-    // تحديث الـ document في collection jobs
-    final jobDocRef =
-        FirebaseFirestore.instance.collection('jobs').doc(jobId);
+      final snapshot = await companyDoc.get();
+      final data = snapshot.data()!;
 
-    final jobSnapshot = await jobDocRef.get();
-    if (jobSnapshot.exists) {
-      await jobDocRef.update(updatedJob.toJson());
-    }
+      List uploadedJobs = List.from(data['uploadedJobs'] ?? []);
+      List activeJobs = List.from(data['activeJobs'] ?? []);
+      List terminatedJobs = List.from(data['terminatedJobs'] ?? []);
 
-    // نحدث الـ Cubit لو إحنا في TotalScreen (مش HomeScreen)
-    if (_currentListType != null) {
-      _currentJobs = _currentJobs.map((job) {
-        if (job.jobId == jobId) return updatedJob;
-        return job;
-      }).toList();
+      // 1️⃣ نجيب الجوب من active
+      final index = activeJobs.indexWhere((job) => job['jobId'] == jobId);
+      if (index == -1) return;
 
+      Map<String, dynamic> job = Map.from(activeJobs[index]);
+
+      // 2️⃣ نحدث status
+      job['status'] = 'Terminated';
+
+      // 3️⃣ نشيلها من active
+      activeJobs.removeAt(index);
+
+      // 4️⃣ نضيفها في terminated
+      terminatedJobs.add(job);
+
+      // 5️⃣ نحدثها داخل uploaded
+      final uploadedIndex = uploadedJobs.indexWhere((j) => j['jobId'] == jobId);
+      if (uploadedIndex != -1) {
+        uploadedJobs[uploadedIndex] = job;
+      }
+
+      // 6️⃣ Update Company
+      await companyDoc.update({
+        'activeJobs': activeJobs,
+        'terminatedJobs': terminatedJobs,
+        'uploadedJobs': uploadedJobs,
+      });
+
+      // 7️⃣ نشيلها من jobs collection
+      await FirebaseFirestore.instance.collection('jobs').doc(jobId).delete();
+
+      // 8️⃣ تحديث الـ UI
+      _currentJobs.removeWhere((j) => j.jobId == jobId);
       emit(JobListLoadedState(_currentJobs));
-    } else {
-      emit(JobSuccessState()); // مجرد نجاح لو مش في TotalScreen
+    } catch (e) {
+      emit(JobFailureState(e.toString()));
     }
-
-  } catch (e) {
-    emit(JobFailureState(e.toString()));
   }
-}
 
+  Future<void> restoreJob(String jobId) async {
+    try {
+      emit(JobLoadingState());
 
-Future<void> terminateJobFromActive(String jobId) async {
-  try {
-    emit(JobLoadingState());
+      final companyId = FirebaseAuth.instance.currentUser!.uid;
+      final companyDoc =
+          FirebaseFirestore.instance.collection('Company').doc(companyId);
 
-    final companyId = FirebaseAuth.instance.currentUser!.uid;
-    final companyDoc =
-        FirebaseFirestore.instance.collection('Company').doc(companyId);
+      final snapshot = await companyDoc.get();
+      final data = snapshot.data()!;
 
-    final snapshot = await companyDoc.get();
-    final data = snapshot.data()!;
+      List uploadedJobs = List.from(data['uploadedJobs'] ?? []);
+      List activeJobs = List.from(data['activeJobs'] ?? []);
+      List terminatedJobs = List.from(data['terminatedJobs'] ?? []);
 
-    List uploadedJobs = List.from(data['uploadedJobs'] ?? []);
-    List activeJobs = List.from(data['activeJobs'] ?? []);
-    List terminatedJobs = List.from(data['terminatedJobs'] ?? []);
+      final index = terminatedJobs.indexWhere((job) => job['jobId'] == jobId);
+      if (index == -1) return;
 
-    // 1️⃣ نجيب الجوب من active
-    final index =
-        activeJobs.indexWhere((job) => job['jobId'] == jobId);
-    if (index == -1) return;
+      Map<String, dynamic> job = Map.from(terminatedJobs[index]);
 
-    Map<String, dynamic> job = Map.from(activeJobs[index]);
+      job['status'] = 'Active';
 
-    // 2️⃣ نحدث status
-    job['status'] = 'Terminated';
+      // 1️⃣ شيلها من terminated
+      terminatedJobs.removeAt(index);
 
-    // 3️⃣ نشيلها من active
-    activeJobs.removeAt(index);
+      // 2️⃣ ضيفها في active
+      activeJobs.add(job);
 
-    // 4️⃣ نضيفها في terminated
-    terminatedJobs.add(job);
+      // 3️⃣ حدث uploaded
+      final uploadedIndex = uploadedJobs.indexWhere((j) => j['jobId'] == jobId);
+      if (uploadedIndex != -1) {
+        uploadedJobs[uploadedIndex] = job;
+      }
 
-    // 5️⃣ نحدثها داخل uploaded
-    final uploadedIndex =
-        uploadedJobs.indexWhere((j) => j['jobId'] == jobId);
-    if (uploadedIndex != -1) {
-      uploadedJobs[uploadedIndex] = job;
+      // 4️⃣ رجّعها لل jobs collection
+      await FirebaseFirestore.instance.collection('jobs').doc(jobId).set(job);
+
+      // 5️⃣ Update Company
+      await companyDoc.update({
+        'activeJobs': activeJobs,
+        'terminatedJobs': terminatedJobs,
+        'uploadedJobs': uploadedJobs,
+      });
+
+      _currentJobs.removeWhere((j) => j.jobId == jobId);
+      emit(JobListLoadedState(_currentJobs));
+    } catch (e) {
+      emit(JobFailureState(e.toString()));
     }
-
-    // 6️⃣ Update Company
-    await companyDoc.update({
-      'activeJobs': activeJobs,
-      'terminatedJobs': terminatedJobs,
-      'uploadedJobs': uploadedJobs,
-    });
-
-    // 7️⃣ نشيلها من jobs collection
-    await FirebaseFirestore.instance
-        .collection('jobs')
-        .doc(jobId)
-        .delete();
-
-    // 8️⃣ تحديث الـ UI
-    _currentJobs.removeWhere((j) => j.jobId == jobId);
-    emit(JobListLoadedState(_currentJobs));
-
-  } catch (e) {
-    emit(JobFailureState(e.toString()));
   }
-}
 
-Future<void> restoreJob(String jobId) async {
-  try {
-    emit(JobLoadingState());
+  Future<void> deleteJobPermanently(String jobId) async {
+    try {
+      emit(JobLoadingState());
 
-    final companyId = FirebaseAuth.instance.currentUser!.uid;
-    final companyDoc =
-        FirebaseFirestore.instance.collection('Company').doc(companyId);
+      final companyId = FirebaseAuth.instance.currentUser!.uid;
+      final companyDoc =
+          FirebaseFirestore.instance.collection('Company').doc(companyId);
 
-    final snapshot = await companyDoc.get();
-    final data = snapshot.data()!;
+      final snapshot = await companyDoc.get();
+      final data = snapshot.data()!;
 
-    List uploadedJobs = List.from(data['uploadedJobs'] ?? []);
-    List activeJobs = List.from(data['activeJobs'] ?? []);
-    List terminatedJobs = List.from(data['terminatedJobs'] ?? []);
+      List uploadedJobs = List.from(data['uploadedJobs'] ?? []);
+      List terminatedJobs = List.from(data['terminatedJobs'] ?? []);
 
-    final index =
-        terminatedJobs.indexWhere((job) => job['jobId'] == jobId);
-    if (index == -1) return;
+      uploadedJobs.removeWhere((j) => j['jobId'] == jobId);
+      terminatedJobs.removeWhere((j) => j['jobId'] == jobId);
 
-    Map<String, dynamic> job = Map.from(terminatedJobs[index]);
+      await companyDoc.update({
+        'uploadedJobs': uploadedJobs,
+        'terminatedJobs': terminatedJobs,
+      });
 
-    job['status'] = 'Active';
+      await FirebaseFirestore.instance.collection('jobs').doc(jobId).delete();
 
-    // 1️⃣ شيلها من terminated
-    terminatedJobs.removeAt(index);
-
-    // 2️⃣ ضيفها في active
-    activeJobs.add(job);
-
-    // 3️⃣ حدث uploaded
-    final uploadedIndex =
-        uploadedJobs.indexWhere((j) => j['jobId'] == jobId);
-    if (uploadedIndex != -1) {
-      uploadedJobs[uploadedIndex] = job;
+      _currentJobs.removeWhere((j) => j.jobId == jobId);
+      emit(JobListLoadedState(_currentJobs));
+    } catch (e) {
+      emit(JobFailureState(e.toString()));
     }
-
-    // 4️⃣ رجّعها لل jobs collection
-    await FirebaseFirestore.instance
-        .collection('jobs')
-        .doc(jobId)
-        .set(job);
-
-    // 5️⃣ Update Company
-    await companyDoc.update({
-      'activeJobs': activeJobs,
-      'terminatedJobs': terminatedJobs,
-      'uploadedJobs': uploadedJobs,
-    });
-
-    _currentJobs.removeWhere((j) => j.jobId == jobId);
-    emit(JobListLoadedState(_currentJobs));
-
-  } catch (e) {
-    emit(JobFailureState(e.toString()));
   }
-}
-
-Future<void> deleteJobPermanently(String jobId) async {
-  try {
-    emit(JobLoadingState());
-
-    final companyId = FirebaseAuth.instance.currentUser!.uid;
-    final companyDoc =
-        FirebaseFirestore.instance.collection('Company').doc(companyId);
-
-    final snapshot = await companyDoc.get();
-    final data = snapshot.data()!;
-
-    List uploadedJobs = List.from(data['uploadedJobs'] ?? []);
-    List terminatedJobs = List.from(data['terminatedJobs'] ?? []);
-
-    uploadedJobs.removeWhere((j) => j['jobId'] == jobId);
-    terminatedJobs.removeWhere((j) => j['jobId'] == jobId);
-
-    await companyDoc.update({
-      'uploadedJobs': uploadedJobs,
-      'terminatedJobs': terminatedJobs,
-    });
-
-    await FirebaseFirestore.instance
-        .collection('jobs')
-        .doc(jobId)
-        .delete();
-
-    _currentJobs.removeWhere((j) => j.jobId == jobId);
-    emit(JobListLoadedState(_currentJobs));
-
-  } catch (e) {
-    emit(JobFailureState(e.toString()));
-  }
-}
-
-
 }

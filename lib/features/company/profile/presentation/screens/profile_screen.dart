@@ -14,8 +14,8 @@ import 'package:wasl/features/auth/models/company_model.dart';
 import 'package:wasl/services/firebase/firebase_services.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
-
+  const ProfileScreen({super.key, required this.canEdit});
+  final bool canEdit;
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -52,6 +52,29 @@ class ProfileScreen extends StatelessWidget {
                     email: company.email,
                     field: company.field,
                     isCompany: true,
+                    canEdit: canEdit,
+                    onLogout: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          title: const Text("Logout"),
+                          content: const Text("Are you sure?"),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text("Cancel"),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                context.read<AuthCubit>().logout();
+                                Navigator.pop(context);
+                              },
+                              child: const Text("Logout"),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                   const Gap(40),
                   Text(

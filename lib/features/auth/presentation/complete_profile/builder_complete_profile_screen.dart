@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -19,7 +21,8 @@ import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/core/utils/text_styles.dart';
 import 'package:wasl/features/auth/cubit/auth_cubit.dart';
 import 'package:wasl/features/auth/cubit/auth_state.dart';
-import 'package:wasl/features/auth/models/listtile_item_model.dart';
+import 'package:wasl/features/auth/models/career_builder_model.dart';
+import 'package:wasl/core/job/models/list_item_model.dart';
 import 'package:wasl/features/auth/presentation/complete_profile/widgets/expansion_tile_widget.dart';
 
 class BuilderCompleteProfile extends StatefulWidget {
@@ -30,20 +33,27 @@ class BuilderCompleteProfile extends StatefulWidget {
 }
 
 class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
-  File? imagePath;
-  List<ListTileItemModel> workExperiences = [];
-  List<ListTileItemModel> education = [];
-  List<ListTileItemModel> certificates = [];
-  List<ListTileItemModel> skills = [];
+  File? imageFile;
+  String? imageUrl;
+  List<ListItemModel> workExperiences = [];
+  List<ListItemModel> education = [];
+  List<ListItemModel> certificates = [];
+  List<ListItemModel> skills = [];
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  }
 
   @override
   Widget build(BuildContext context) {
     var cubit = context.read<AuthCubit>();
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: AppColors.primaryColor,
         title: Text(
-          "Complete Your Profile",
+          imageUrl != null ? "Update Your Profile" : "Complete Your Profile",
           style: TextStyles.textSize18.copyWith(
             color: AppColors.bgColor,
           ),
@@ -56,6 +66,7 @@ class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
           } else if (state is AuthSuccessState) {
             pop(context);
             pushAndRemoveUntil(context, Routes.Bmain);
+            showSnakBar(context, Colors.green, "Data Updated Successfully");
           } else if (state is AuthFailureState) {
             Navigator.pop(context);
             showSnakBar(context, Colors.red, state.errorMessage);
@@ -116,19 +127,22 @@ class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
                             backgroundColor:
                                 AppColors.grayColor.withOpacity(0.4),
                             child: ClipOval(
-                              child: imagePath != null
-                                  ? Image.file(
-                                      imagePath!,
+                              child: imageFile != null
+                                  ? Image.file(imageFile!,
+                                      fit: BoxFit.cover,
                                       width: 140,
-                                      height: 140,
-                                      fit: BoxFit.contain,
-                                    )
-                                  : Image.asset(
-                                      AppImages.person,
-                                      width: 120,
-                                      height: 120,
-                                      fit: BoxFit.contain,
-                                    ),
+                                      height: 140)
+                                  : imageUrl != null && imageUrl!.isNotEmpty
+                                      ? Image.network(imageUrl!,
+                                          fit: BoxFit.cover,
+                                          width: 140,
+                                          height: 140)
+                                      : Image.asset(
+                                          AppImages.person,
+                                          fit: BoxFit.cover,
+                                          width: 120,
+                                          height: 120,
+                                        ),
                             ),
                           ),
                           Positioned(
@@ -302,12 +316,13 @@ class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
             txt: "Done",
             onPressed: () async {
               if (cubit.formKey.currentState!.validate()) {
-                if (imagePath != null) {
+                if (imageFile != null ||
+                    (imageUrl != null && imageUrl!.isNotEmpty)) {
                   cubit.workExperiences = workExperiences;
                   cubit.education = education;
                   cubit.certificates = certificates;
                   cubit.skills = skills;
-                  cubit.updateData(imagePath, usertype.Career);
+                  cubit.updateData(imageFile, usertype.Career);
                 } else {
                   showSnakBar(
                       context, AppColors.redColor, "Please Upload an Image");
@@ -326,8 +341,34 @@ class _BuilderCompleteProfileState extends State<BuilderCompleteProfile> {
     );
     if (file != null) {
       setState(() {
-        imagePath = File(file.path);
+        imageFile = File(file.path);
       });
     }
+  }
+
+  Future<void> loadUserData() async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+
+    final doc =
+        await FirebaseFirestore.instance.collection("Career").doc(uid).get();
+
+    if (!doc.exists) return;
+
+    final user = CareerBuilderModel.fromJson(doc.data()!);
+
+    final cubit = context.read<AuthCubit>();
+
+    cubit.nameController.text = user.name ?? "";
+    cubit.emailController.text = user.email ?? "";
+    cubit.summaryController.text = user.summary ?? "";
+    cubit.Industrie = user.field;
+    cubit.jobTitle = user.jobTitle;
+    imageUrl = user.image;
+    workExperiences = user.workExperiences ?? [];
+    education = user.education ?? [];
+    certificates = user.certificates ?? [];
+    skills = user.skills ?? [];
+
+    setState(() {}); // علشان Dropdown يتحدث
   }
 }

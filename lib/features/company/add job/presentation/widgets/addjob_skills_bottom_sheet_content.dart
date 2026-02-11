@@ -4,7 +4,7 @@ import 'package:wasl/components/buttons/custom_buttom.dart';
 import 'package:wasl/core/job/cubit/job_cubit.dart';
 import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/core/utils/text_styles.dart';
-import 'package:wasl/features/auth/models/listtile_item_model.dart';
+import 'package:wasl/core/job/models/list_item_model.dart';
 import 'package:wasl/features/auth/presentation/complete_profile/widgets/bottomsheet_text_form_field.dart';
 import 'package:wasl/features/company/add%20job/presentation/widgets/addjob_expansion_tile_widget.dart';
 
@@ -80,11 +80,11 @@ class _AddjobSkillsBottomSheetContentState
               txt: "Add",
               onPressed: () {
                 if (!_formKey.currentState!.validate()) return;
-widget.widget.onAdd(
-  ListTileItemModel(
-    name: skillController.text,
-  ),
-);
+                widget.widget.onAdd(
+                  ListItemModel(
+                    name: skillController.text,
+                  ),
+                );
                 Navigator.pop(context);
               },
             )

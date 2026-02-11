@@ -9,7 +9,7 @@ import 'package:wasl/features/company/home/presentation/widgets/employees_in_ind
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key, required this.onTotalApplicationsTap});
-final VoidCallback onTotalApplicationsTap;
+  final VoidCallback onTotalApplicationsTap;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +34,8 @@ final VoidCallback onTotalApplicationsTap;
                   ),
                   TextButton(
                       onPressed: () {
-                        pushTo(context, Routes.induartyemployee);
+                        pushTo(context, Routes.allItems,
+                            extra: "Employees In The Same Industry");
                       },
                       child: Text(
                         "See All",

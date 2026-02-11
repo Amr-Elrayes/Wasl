@@ -1,18 +1,18 @@
-class ListTileItemModel {
+class ListItemModel {
   final String name;
   final String? location;
   final String? startDate;
   final String? endDate;
 
-  const ListTileItemModel({
+  const ListItemModel({
     required this.name,
     this.location,
     this.startDate,
     this.endDate,
   });
 
-  factory ListTileItemModel.fromJson(Map<String, dynamic> map) {
-    return ListTileItemModel(
+  factory ListItemModel.fromJson(Map<String, dynamic> map) {
+    return ListItemModel(
       name: map['name'] ?? '',
       location: map['location'],
       startDate: map['startDate'],

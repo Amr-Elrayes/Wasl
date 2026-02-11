@@ -7,7 +7,7 @@ import 'package:wasl/core/job/cubit/job_cubit.dart';
 import 'package:wasl/core/routes/navigation.dart';
 import 'package:wasl/core/routes/routes.dart';
 import 'package:wasl/features/auth/models/company_model.dart';
-import 'package:wasl/features/company/home/presentation/widgets/detail_container.dart';
+import 'package:wasl/components/cards/detail_container.dart';
 
 class DetailsGridView extends StatelessWidget {
   const DetailsGridView({super.key, required this.onTotalApplicationsTap});

@@ -31,7 +31,10 @@ class EmplpyeeCard extends StatelessWidget {
       child: InkWell(
         onTap: () {
           if (isClickable) {
-            pushTo(context, Routes.BprofileScreen, extra: employee);
+            pushTo(context, Routes.BprofilefromCompanyScreen,   extra: {
+    'user': employee,
+    'canEdit': false,
+  },);
           }
         },
         child: Row(
