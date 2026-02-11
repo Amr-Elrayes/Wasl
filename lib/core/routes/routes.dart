@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wasl/core/job/cubit/job_cubit.dart';
@@ -14,6 +15,7 @@ import 'package:wasl/features/career/home/presentation/screens/jobs_in_title_scr
 import 'package:wasl/features/career/main/career_builder_main_screen.dart';
 import 'package:wasl/features/career/profile/presentation/screens/profile_from_company.dart';
 import 'package:wasl/features/career/profile/presentation/screens/profile_screen.dart';
+import 'package:wasl/features/career/search/presentation/screens/search_screen.dart';
 import 'package:wasl/features/company/add%20job/presentation/screens/add_job_sreen.dart';
 import 'package:wasl/features/all_items/presentation/screens/all_items_screen.dart';
 import 'package:wasl/features/job_details/presentation/screens/job_details_screen.dart';
@@ -149,20 +151,19 @@ class Routes {
           );
         },
       ),
-GoRoute(
-  path: Routes.JobDetailsScreen,
-  builder: (context, state) {
-    final extra = state.extra as Map<String, dynamic>;
-    final JobModel job = extra['job'] as JobModel;
-    final bool isUser = extra['isUser'] as bool;
+      GoRoute(
+        path: Routes.JobDetailsScreen,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          final JobModel job = extra['job'] as JobModel;
+          final bool isUser = extra['isUser'] as bool;
 
-    return jobDetailsScreen(
-      job: job,
-      isUser: isUser,
-    );
-  },
-),
-
+          return jobDetailsScreen(
+            job: job,
+            isUser: isUser,
+          );
+        },
+      ),
       GoRoute(
         path: addJob,
         builder: (context, state) {
@@ -184,6 +185,16 @@ GoRoute(
         builder: (context, state) {
           final String title = state.extra as String? ?? "";
           return JobsInTitleScreen(title: title);
+        },
+      ),
+      GoRoute(
+        path: search,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return SearchScreen(
+            searchKey: extra['searchKey'],
+            controller: extra['controller'],
+          );
         },
       ),
     ],

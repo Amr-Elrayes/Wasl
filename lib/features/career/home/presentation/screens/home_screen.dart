@@ -27,7 +27,16 @@ class HomeScreen extends StatelessWidget {
             const InfoRow(),
             const Gap(40),
             GestureDetector(
-              onTap: () {},
+              onTap: () {
+                pushTo(
+                  context,
+                  Routes.search,
+                  extra: {
+                    "searchKey" : controller.text,
+                    "controller" : controller
+                  },
+                );
+              },
               child: Searchfield(
                 controller: controller,
                 isIdel: true,

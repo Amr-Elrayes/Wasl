@@ -26,6 +26,16 @@ class FirestoreServices {
         .where("field", isEqualTo: field, isNull: false)
         .get();
   }
+static Future<QuerySnapshot> getAllJobs() {
+  return _jobsCollection.get();
+}
+    static Future<QuerySnapshot> getJobsByTitle(String searchKey) {
+    return _jobsCollection
+        .orderBy("title")
+        .startAt([searchKey])
+        .endAt([searchKey + '\uf8ff'])
+        .get();
+  }
 
   static Future<QuerySnapshot> getCompanyByName(String searchKey) {
     return _companyCollection
