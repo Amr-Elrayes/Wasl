@@ -1,4 +1,3 @@
-import 'package:wasl/features/auth/models/career_builder_model.dart';
 import 'package:wasl/core/job/models/list_item_model.dart';
 
 class JobModel {
@@ -6,6 +5,7 @@ class JobModel {
   final String? title;
   final String? company;
   final String? companyImg;
+  final String? companyId;
   final String? location;
   final String? type;
   final double? salary;
@@ -13,7 +13,7 @@ class JobModel {
   final String status;
   final String? requirments;
   final List<ListItemModel>? reqSkills;
-  final List<CareerBuilderModel>? applications;
+  final List<String>? applications;
 
   JobModel({
     required this.jobId,
@@ -27,6 +27,7 @@ class JobModel {
     this.title,
     this.company,
     this.companyImg,
+    this.companyId,
     this.applications,
   });
 
@@ -36,18 +37,17 @@ class JobModel {
       title: json['title'],
       company: json['company'],
       companyImg: json['companyImg'],
+      companyId: json['companyId'],
       location: json['location'],
       type: json['type'],
-      salary: json['salary'],
+      salary: (json['salary'] as num?)?.toDouble(),
       description: json['description'],
       requirments: json['requirments'],
       status: json['status'],
       reqSkills: (json['reqSkills'] as List<dynamic>? ?? [])
           .map((e) => ListItemModel.fromJson(e))
           .toList(),
-      applications: (json['applications'] as List<dynamic>? ?? [])
-          .map((e) => CareerBuilderModel.fromJson(e))
-          .toList(),
+      applications: List<String>.from(json['applications'] ?? []),
     );
   }
 
@@ -56,6 +56,7 @@ class JobModel {
         'title': title,
         'company': company,
         'companyImg': companyImg,
+        'companyId': companyId,
         'location': location,
         'type': type,
         'salary': salary,
@@ -63,6 +64,6 @@ class JobModel {
         'status': status,
         'requirments': requirments,
         'reqSkills': reqSkills?.map((e) => e.toJson()).toList(),
-        'applications': applications?.map((e) => e.toJson()).toList(),
+        'applications': applications,
       };
 }

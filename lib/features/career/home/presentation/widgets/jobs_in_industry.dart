@@ -26,19 +26,21 @@ class JobsInIndustry extends StatelessWidget {
 
         final userTitle = fieldSnapshot.data!;
 
-        return FutureBuilder<QuerySnapshot>(
-          future: FirestoreServices.filterJobsByTitle(userTitle),
+        return StreamBuilder<QuerySnapshot>(
+          stream: FirestoreServices.filterJobsByTitle(userTitle),
           builder: (context, snapshot) {
-            if (!snapshot.hasData) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
-            if (snapshot.data!.docs.isEmpty) {
+
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
               return Center(
                 child: Column(
                   children: [
-                    Lottie.asset(AppImages.noData, width: 160, height: 160),
+                    Lottie.asset(AppImages.noData,
+                        width: 160, height: 160),
                     Text(
                       "No Jobs Has The Same Title",
                       style: TextStyles.textSize15,
@@ -47,6 +49,7 @@ class JobsInIndustry extends StatelessWidget {
                 ),
               );
             }
+
             return ListView.separated(
               separatorBuilder: (_, __) =>
                   const Divider(color: AppColors.grayColor),
@@ -54,9 +57,12 @@ class JobsInIndustry extends StatelessWidget {
               shrinkWrap: true,
               itemCount: snapshot.data!.docs.length,
               itemBuilder: (context, index) {
+                final doc = snapshot.data!.docs[index];
+
                 final job = JobModel.fromJson(
-                  snapshot.data!.docs[index].data() as Map<String, dynamic>,
+                  doc.data() as Map<String, dynamic>,
                 );
+
                 return JobCard(
                   job: job,
                   onTap: () {
@@ -78,3 +84,4 @@ class JobsInIndustry extends StatelessWidget {
     );
   }
 }
+

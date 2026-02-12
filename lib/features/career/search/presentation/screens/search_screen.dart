@@ -38,7 +38,7 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
-  Future<QuerySnapshot> getJobs() {
+  Stream<QuerySnapshot> getJobs() {
     if (searchKey.isEmpty) {
       return FirestoreServices.getAllJobs();
     } else {
@@ -71,14 +71,16 @@ class _SearchScreenState extends State<SearchScreen> {
             Searchfield(controller: controller, isIdel: false),
             const SizedBox(height: 20),
             Expanded(
-              child: FutureBuilder<QuerySnapshot>(
-                future: getJobs(),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: getJobs(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  if (snapshot.data!.docs.isEmpty) {
+                  final docs = snapshot.data!.docs;
+
+                  if (docs.isEmpty) {
                     return const EmptyWidget();
                   }
 
@@ -86,13 +88,12 @@ class _SearchScreenState extends State<SearchScreen> {
                     separatorBuilder: (context, index) {
                       return const Gap(20);
                     },
-                    itemCount: snapshot.data!.docs.length,
+                    itemCount: docs.length,
                     itemBuilder: (context, index) {
-                      final doc = snapshot.data!.docs[index];
-
                       final job = JobModel.fromJson(
-                        doc.data() as Map<String, dynamic>,
+                        docs[index].data() as Map<String, dynamic>,
                       );
+
                       return JobCard(
                         job: job,
                         onTap: () {

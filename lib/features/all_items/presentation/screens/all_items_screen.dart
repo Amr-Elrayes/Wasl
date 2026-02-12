@@ -50,73 +50,108 @@ class AllItemsScreen extends StatelessWidget {
 
               final field = fieldSnapshot.data!;
 
-              return FutureBuilder<QuerySnapshot>(
-                future: (title.startsWith("Employees"))
-                    ? FirestoreServices.filterEmployeesByIndustry(field)
-                    : FirestoreServices.filterJobsByTitle(field),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                  if (snapshot.data!.docs.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Lottie.asset(AppImages.noData,
-                              width: 160, height: 160),
-                          Text(
-                            (title.startsWith("Employees"))
-                                ? "No Employees In Your Indusrty"
-                                : "No Jobs Has The Same Title",
-                            style: TextStyles.textSize15,
-                          )
-                        ],
-                      ),
-                    );
-                  }
-                  return ListView.separated(
-                    separatorBuilder: (_, __) =>
-                        const Divider(color: AppColors.grayColor),
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      if (title.startsWith("Employees")) {
-                        final employee = CareerBuilderModel.fromJson(
-                          snapshot.data!.docs[index].data()
-                              as Map<String, dynamic>,
-                        );
+if (title.startsWith("Employees")) {
+  return FutureBuilder<QuerySnapshot>(
+    future: FirestoreServices.filterEmployeesByIndustry(field),
+    builder: (context, snapshot) {
+      if (!snapshot.hasData) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
 
-                        return EmplpyeeCard(employee: employee);
-                      } else {
-                        final job = JobModel.fromJson(
-                          snapshot.data!.docs[index].data()
-                              as Map<String, dynamic>,
-                        );
+      final docs = snapshot.data!.docs;
 
-                        return JobCard(
-                          job: job,
-                          onTap: () {
-                            pushTo(
-                              context,
-                              Routes.JobDetailsScreen,
-                              extra: {
-                                "job": job,
-                                "isUser": true,
-                              },
-                            );
-                          },
-                        );
-                      }
-                    },
-                  );
+      if (docs.isEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Lottie.asset(AppImages.noData, width: 160, height: 160),
+              Text(
+                "No Employees In Your Industry",
+                style: TextStyles.textSize15,
+              )
+            ],
+          ),
+        );
+      }
+
+      return ListView.separated(
+        separatorBuilder: (_, __) =>
+            const Divider(color: AppColors.grayColor),
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: docs.length,
+        itemBuilder: (context, index) {
+          final employee = CareerBuilderModel.fromJson(
+            docs[index].data() as Map<String, dynamic>,
+          );
+
+          return EmplpyeeCard(employee: employee);
+        },
+      );
+    },
+  );
+} else {
+  return StreamBuilder<QuerySnapshot>(
+    stream: FirestoreServices.filterJobsByTitle(field),
+    builder: (context, snapshot) {
+      if (!snapshot.hasData) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+
+      final docs = snapshot.data!.docs;
+
+      if (docs.isEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Lottie.asset(AppImages.noData, width: 160, height: 160),
+              Text(
+                "No Jobs Has The Same Title",
+                style: TextStyles.textSize15,
+              )
+            ],
+          ),
+        );
+      }
+
+      return ListView.separated(
+        separatorBuilder: (_, __) =>
+            const Divider(color: AppColors.grayColor),
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: docs.length,
+        itemBuilder: (context, index) {
+          final job = JobModel.fromJson(
+            docs[index].data() as Map<String, dynamic>,
+          );
+
+          return JobCard(
+            job: job,
+            onTap: () {
+              pushTo(
+                context,
+                Routes.JobDetailsScreen,
+                extra: {
+                  "job": job,
+                  "isUser": true,
                 },
               );
             },
+          );
+        },
+      );
+    },
+  );
+}
+            },
           ),
-        ));
+        ),
+        );
   }
 }

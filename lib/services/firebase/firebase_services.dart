@@ -11,13 +11,12 @@ class FirestoreServices {
   static final CollectionReference _jobsCollection =
       FirebaseFirestore.instance.collection('jobs');
 
-  static Future<QuerySnapshot> filterJobsByTitle(
-    String title,
-  ) async {
-    final result = await _jobsCollection.where("title", isEqualTo: title).get();
+static Stream<QuerySnapshot> filterJobsByTitle(String title) {
+  return _jobsCollection
+      .where("title", isEqualTo: title)
+      .snapshots();
+}
 
-    return result;
-  }
 
   static Future<QuerySnapshot> filterEmployeesByIndustry(
     String field,
@@ -26,16 +25,17 @@ class FirestoreServices {
         .where("field", isEqualTo: field, isNull: false)
         .get();
   }
-static Future<QuerySnapshot> getAllJobs() {
-  return _jobsCollection.get();
+static Stream<QuerySnapshot> getAllJobs() {
+  return _jobsCollection.snapshots();
 }
-    static Future<QuerySnapshot> getJobsByTitle(String searchKey) {
-    return _jobsCollection
-        .orderBy("title")
-        .startAt([searchKey])
-        .endAt([searchKey + '\uf8ff'])
-        .get();
-  }
+
+static Stream<QuerySnapshot> getJobsByTitle(String title) {
+  return _jobsCollection
+      .where("title", isGreaterThanOrEqualTo: title)
+      .where("title", isLessThanOrEqualTo: '$title\uf8ff')
+      .snapshots();
+}
+
 
   static Future<QuerySnapshot> getCompanyByName(String searchKey) {
     return _companyCollection

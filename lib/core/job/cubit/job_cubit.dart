@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +23,13 @@ class JobCubit extends Cubit<JobState> {
   // ignore: unused_field
   JobListType? _currentListType;
   List<JobModel> _currentJobs = [];
+  StreamSubscription<DocumentSnapshot>? _companySubscription;
+
+  @override
+  Future<void> close() {
+    _companySubscription?.cancel();
+    return super.close();
+  }
 
   Future<void> uploadJob({
     required String companyId,
@@ -43,12 +52,14 @@ class JobCubit extends Cubit<JobState> {
         title: title,
         company: FirebaseAuth.instance.currentUser?.displayName,
         companyImg: Company.image,
+        companyId: Company.uid,
         location: jobLocation?.name,
         type: jobType?.name,
         salary: double.tryParse(salaryController.text),
         description: describtionController.text,
         requirments: requirmentsController.text,
         reqSkills: reqskills,
+        applications: []
       );
 
       /// 3- batch (عشان يترفعوا مع بعض)
@@ -86,47 +97,51 @@ class JobCubit extends Cubit<JobState> {
     formKey = GlobalKey<FormState>();
   }
 
-  Future<void> getJobsByType({
+  void getJobsByType({
     required String companyId,
     required JobListType type,
-  }) async {
+  }) {
     emit(JobLoadingState());
 
     _currentListType = type;
 
-    final doc = await FirebaseFirestore.instance
+    _companySubscription?.cancel();
+
+    _companySubscription = FirebaseFirestore.instance
         .collection('Company')
         .doc(companyId)
-        .get();
+        .snapshots()
+        .listen((doc) {
+      if (!doc.exists) {
+        emit(JobListLoadedState([]));
+        return;
+      }
 
-    if (!doc.exists) {
-      _currentJobs = [];
-      emit(JobListLoadedState([]));
-      return;
-    }
+      final data = doc.data()!;
+      List jobsJson = [];
 
-    final data = doc.data()!;
-    List jobsJson = [];
+      switch (type) {
+        case JobListType.uploaded:
+          jobsJson = data['uploadedJobs'] ?? [];
+          break;
 
-    switch (type) {
-      case JobListType.uploaded:
-        jobsJson = data['uploadedJobs'] ?? [];
-        break;
+        case JobListType.active:
+          jobsJson = data['activeJobs'] ?? [];
+          break;
 
-      case JobListType.active:
-        jobsJson = data['activeJobs'] ?? [];
-        break;
+        case JobListType.terminated:
+          jobsJson = data['terminatedJobs'] ?? [];
+          break;
+      }
 
-      case JobListType.terminated:
-        jobsJson = data['terminatedJobs'] ?? [];
-        break;
-    }
+      final jobs = jobsJson
+          .map((e) => JobModel.fromJson(Map<String, dynamic>.from(e)))
+          .toList();
 
-    _currentJobs = jobsJson
-        .map((e) => JobModel.fromJson(Map<String, dynamic>.from(e)))
-        .toList();
+      _currentJobs = jobs;
 
-    emit(JobListLoadedState(_currentJobs));
+      emit(JobListLoadedState(jobs));
+    });
   }
 
   Future<void> updateJob({
@@ -248,7 +263,18 @@ class JobCubit extends Cubit<JobState> {
       // 7️⃣ نشيلها من jobs collection
       await FirebaseFirestore.instance.collection('jobs').doc(jobId).delete();
 
-      // 8️⃣ تحديث الـ UI
+      // 8️⃣ نشيل الـ jobId من appliedJobs لكل يوزر
+      final usersSnapshot =
+          await FirebaseFirestore.instance.collection('Career').get();
+      for (var doc in usersSnapshot.docs) {
+        List appliedJobs = List.from(doc['appliedJobs'] ?? []);
+        if (appliedJobs.contains(jobId)) {
+          appliedJobs.remove(jobId);
+          await doc.reference.update({'appliedJobs': appliedJobs});
+        }
+      }
+
+      // 9️⃣ تحديث الـ UI
       _currentJobs.removeWhere((j) => j.jobId == jobId);
       emit(JobListLoadedState(_currentJobs));
     } catch (e) {

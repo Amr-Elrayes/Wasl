@@ -9,6 +9,7 @@ class CareerBuilderModel {
   final String? summary;
   final String? field;
   bool isProfileCompleted;
+  List<String>? appliedJobs;
   List<ListItemModel>? workExperiences;
   List<ListItemModel>? education;
   List<ListItemModel>? certificates;
@@ -21,6 +22,7 @@ class CareerBuilderModel {
       this.image,
       this.jobTitle,
       this.summary,
+      this.appliedJobs,
       this.workExperiences,
       this.education,
       this.certificates,
@@ -50,6 +52,8 @@ class CareerBuilderModel {
       certificates: (json['certificates'] as List<dynamic>? ?? [])
           .map((e) => ListItemModel.fromJson(e))
           .toList(),
+appliedJobs: List<String>.from(json['appliedJobs'] ?? []),
+
     );
   }
 
@@ -63,6 +67,7 @@ class CareerBuilderModel {
       'summary': summary,
       'field': field,
       'isProfileCompleted': isProfileCompleted,
+      'appliedJobs': appliedJobs,
       'skills': skills?.map((e) => e.toJson()).toList(),
       'certificates': certificates?.map((e) => e.toJson()).toList(),
       'education': education?.map((e) => e.toJson()).toList(),
@@ -86,5 +91,6 @@ class CareerBuilderModel {
         if (certificates != null)
           'certificates': certificates!.map((e) => e.toJson()).toList(),
         if (skills != null) 'skills': skills!.map((e) => e.toJson()).toList(),
+if (appliedJobs != null) 'appliedJobs': appliedJobs,
       };
 }
