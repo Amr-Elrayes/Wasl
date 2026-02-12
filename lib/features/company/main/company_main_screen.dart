@@ -5,7 +5,7 @@ import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/features/company/add%20job/presentation/screens/add_job_sreen.dart';
 import 'package:wasl/features/company/home/presentation/screens/home_screen.dart';
 import 'package:wasl/features/company/profile/presentation/screens/profile_screen.dart';
-import 'package:wasl/features/company/requests/presentation/screens/requestes_screen.dart';
+import 'package:wasl/features/company/requests/presentation/screens/jobs_with_requestes_screen.dart';
 
 class CompanyMainScreen extends StatefulWidget {
   final int initialIndex;
@@ -36,7 +36,7 @@ void initState() {
       },
     ),
     const AddJobSreen(),
-    const RequestesScreen(),
+    const JobsWithRequestesScreen(),
     const ProfileScreen(canEdit: true,),
   ];
 }

@@ -17,6 +17,7 @@ import 'package:wasl/features/career/profile/presentation/screens/profile_screen
 import 'package:wasl/features/career/search/presentation/screens/search_screen.dart';
 import 'package:wasl/features/company/add%20job/presentation/screens/add_job_sreen.dart';
 import 'package:wasl/features/all_items/presentation/screens/all_items_screen.dart';
+import 'package:wasl/features/company/requests/presentation/screens/requestes_screen.dart';
 import 'package:wasl/features/job_details/presentation/screens/job_details_screen.dart';
 import 'package:wasl/features/company/home/presentation/screens/total_screen.dart';
 import 'package:wasl/features/company/main/company_main_screen.dart';
@@ -43,6 +44,7 @@ class Routes {
   static String search = "/search";
   static String indusrty = "/indusrty";
   static String titleJobs = "/titleJobs";
+  static String requestes = "/requestes";
 
   static GoRouter routes = GoRouter(
     routes: [
@@ -196,6 +198,18 @@ class Routes {
           );
         },
       ),
+      GoRoute(
+  path: requestes,
+  builder: (context, state) {
+    final List<String> applicationsIds =
+        state.extra as List<String>? ?? [];
+
+    return RequestesScreen(
+      applicationsIds: applicationsIds,
+    );
+  },
+),
+
     ],
   );
 }
