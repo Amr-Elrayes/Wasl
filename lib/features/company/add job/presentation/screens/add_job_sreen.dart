@@ -254,8 +254,9 @@ class _AddJobSreenState extends State<AddJobSreen> {
                           hintText: "Add Job Salary",
                           keyboardType: TextInputType.number,
                           inputFormatters: [
-                            FilteringTextInputFormatter
-                                .digitsOnly, // ✅ يمنع أي حرف
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'^\d+\.?\d{0,2}'),
+                            ),
                           ],
                           validator: (value) {
                             if (value == null || value.isEmpty) {
