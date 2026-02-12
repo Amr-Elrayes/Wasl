@@ -261,7 +261,10 @@ class _AddJobSreenState extends State<AddJobSreen> {
                             if (value == null || value.isEmpty) {
                               return "Please Enter Job Salary";
                             }
-                            if (!RegExp(r'^[1-9]\d*$').hasMatch(value)) {
+
+                            final salary = double.tryParse(value);
+
+                            if (salary == null || salary <= 0) {
                               return "Salary must be a number greater than 0";
                             }
                             return null;
