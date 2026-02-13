@@ -26,11 +26,7 @@ class LoginScreen extends StatelessWidget {
       ),
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: GestureDetector(
-          onTap: () {
-            pop(context);
-          },
-        ),
+        title: const SizedBox(),
         centerTitle: false,
       ),
       body: SingleChildScrollView(child: _buildloginbody(context)),

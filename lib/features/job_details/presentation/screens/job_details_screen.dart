@@ -25,7 +25,7 @@ class jobDetailsScreen extends StatefulWidget {
 }
 
 class _jobDetailsScreenState extends State<jobDetailsScreen> {
-      bool isLoading = false;
+  bool isLoading = false;
   List<Widget> _buildCompanyActions(BuildContext context) {
     final cubit = context.read<JobCubit>();
 
@@ -188,8 +188,8 @@ class _jobDetailsScreenState extends State<jobDetailsScreen> {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: customButtom(
-  txt: isLoading ? "Applying..." : "Apply",
-  onPressed: isLoading ? null : applyForJob,
+                txt: isLoading ? "Applying..." : "Apply",
+                onPressed: isLoading ? null : applyForJob,
               ),
             )
           : const SizedBox(),
@@ -270,7 +270,7 @@ class _jobDetailsScreenState extends State<jobDetailsScreen> {
                         color: AppColors.primaryColor,
                         fontWeight: FontWeight.bold),
                   ),
-                  Text(widget.job.salary.toString(),
+                  Text("${widget.job.salary.toString()} \$/Month",
                       style: TextStyles.textSize18.copyWith(
                           color: AppColors.primaryColor,
                           fontWeight: FontWeight.bold)),
@@ -313,143 +313,139 @@ class _jobDetailsScreenState extends State<jobDetailsScreen> {
   }
 
   Future<void> applyForJob() async {
-  if (isLoading) return;
+    if (isLoading) return;
 
-  setState(() {
-    isLoading = true;
-  });
+    setState(() {
+      isLoading = true;
+    });
 
-  final user = FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
 
-  if (user == null) {
-    showSnakBar(context, Colors.red, "Please login first");
-    setState(() => isLoading = false);
-    return;
-  }
-
-  final uid = user.uid;
-
-  final firestore = FirebaseFirestore.instance;
-
-  final userDoc = firestore.collection("Career").doc(uid);
-  final jobDoc = firestore.collection("jobs").doc(widget.job.jobId);
-  final companyDoc =
-      firestore.collection("Company").doc(widget.job.companyId);
-
-  final userSnapshot = await userDoc.get();
-  final companySnapshot = await companyDoc.get();
-
-  if (!userSnapshot.exists) {
-    showSnakBar(context, Colors.red, "User data not found");
-    setState(() => isLoading = false);
-    return;
-  }
-
-  if (!companySnapshot.exists) {
-    showSnakBar(context, Colors.red, "Company data not found");
-    setState(() => isLoading = false);
-    return;
-  }
-
-  final userData =
-      CareerBuilderModel.fromJson(userSnapshot.data()!);
-
-  final alreadyApplied =
-      (userData.appliedJobs ?? []).contains(widget.job.jobId);
-
-  if (alreadyApplied) {
-    showSnakBar(context, Colors.red, "You already applied");
-    setState(() => isLoading = false);
-    return;
-  }
-
-  final batch = firestore.batch();
-
-  /// 1️⃣ Update Career
-  batch.update(userDoc, {
-    "appliedJobs": FieldValue.arrayUnion([widget.job.jobId])
-  });
-
-  /// 2️⃣ Update jobs collection
-  batch.update(jobDoc, {
-    "applications": FieldValue.arrayUnion([uid])
-  });
-
-  /// 3️⃣ Update Company.activeJobs
-  List activeJobs =
-      List.from(companySnapshot.data()!['activeJobs'] ?? []);
-
-  final aindex =
-      activeJobs.indexWhere((job) => job['jobId'] == widget.job.jobId);
-
-  if (aindex != -1) {
-    List applications =
-        List.from(activeJobs[aindex]['applications'] ?? []);
-
-    if (!applications.contains(uid)) {
-      applications.add(uid);
+    if (user == null) {
+      showSnakBar(context, Colors.red, "Please login first");
+      setState(() => isLoading = false);
+      return;
     }
 
-    activeJobs[aindex]['applications'] = applications;
+    final uid = user.uid;
 
-    batch.update(companyDoc, {
-      "activeJobs": activeJobs,
-    });
-  }
-  /// 3️⃣ Update Company.uploadedJobs
-  /// 
-  List uploadedJobs =
-      List.from(companySnapshot.data()!['uploadedJobs'] ?? []);
+    final firestore = FirebaseFirestore.instance;
 
-  final uindex =
-      uploadedJobs.indexWhere((job) => job['jobId'] == widget.job.jobId);
+    final userDoc = firestore.collection("Career").doc(uid);
+    final jobDoc = firestore.collection("jobs").doc(widget.job.jobId);
+    final companyDoc =
+        firestore.collection("Company").doc(widget.job.companyId);
 
-  if (uindex != -1) {
-    List applications =
-        List.from(uploadedJobs[uindex]['applications'] ?? []);
+    final userSnapshot = await userDoc.get();
+    final companySnapshot = await companyDoc.get();
 
-    if (!applications.contains(uid)) {
-      applications.add(uid);
+    if (!userSnapshot.exists) {
+      showSnakBar(context, Colors.red, "User data not found");
+      setState(() => isLoading = false);
+      return;
     }
 
-    uploadedJobs[uindex]['applications'] = applications;
-
-    batch.update(companyDoc, {
-      "uploadedJobs": uploadedJobs,
-    });
-  }
-  /// 3️⃣ Update Company.terminatedJobs
-  List terminatedJobs =
-      List.from(companySnapshot.data()!['terminatedJobs'] ?? []);
-
-  final tindex =
-      terminatedJobs.indexWhere((job) => job['jobId'] == widget.job.jobId);
-
-  if (tindex != -1) {
-    List applications =
-        List.from(terminatedJobs[tindex]['applications'] ?? []);
-
-    if (!applications.contains(uid)) {
-      applications.add(uid);
+    if (!companySnapshot.exists) {
+      showSnakBar(context, Colors.red, "Company data not found");
+      setState(() => isLoading = false);
+      return;
     }
 
-    terminatedJobs[tindex]['applications'] = applications;
+    final userData = CareerBuilderModel.fromJson(userSnapshot.data()!);
 
-    batch.update(companyDoc, {
-      "terminatedJobs": terminatedJobs,
+    final alreadyApplied =
+        (userData.appliedJobs ?? []).contains(widget.job.jobId);
+
+    if (alreadyApplied) {
+      showSnakBar(context, Colors.red, "You already applied");
+      setState(() => isLoading = false);
+      return;
+    }
+
+    final batch = firestore.batch();
+
+    /// 1️⃣ Update Career
+    batch.update(userDoc, {
+      "appliedJobs": FieldValue.arrayUnion([widget.job.jobId])
+    });
+
+    /// 2️⃣ Update jobs collection
+    batch.update(jobDoc, {
+      "applications": FieldValue.arrayUnion([uid])
+    });
+
+    /// 3️⃣ Update Company.activeJobs
+    List activeJobs = List.from(companySnapshot.data()!['activeJobs'] ?? []);
+
+    final aindex =
+        activeJobs.indexWhere((job) => job['jobId'] == widget.job.jobId);
+
+    if (aindex != -1) {
+      List applications = List.from(activeJobs[aindex]['applications'] ?? []);
+
+      if (!applications.contains(uid)) {
+        applications.add(uid);
+      }
+
+      activeJobs[aindex]['applications'] = applications;
+
+      batch.update(companyDoc, {
+        "activeJobs": activeJobs,
+      });
+    }
+
+    /// 3️⃣ Update Company.uploadedJobs
+    ///
+    List uploadedJobs =
+        List.from(companySnapshot.data()!['uploadedJobs'] ?? []);
+
+    final uindex =
+        uploadedJobs.indexWhere((job) => job['jobId'] == widget.job.jobId);
+
+    if (uindex != -1) {
+      List applications = List.from(uploadedJobs[uindex]['applications'] ?? []);
+
+      if (!applications.contains(uid)) {
+        applications.add(uid);
+      }
+
+      uploadedJobs[uindex]['applications'] = applications;
+
+      batch.update(companyDoc, {
+        "uploadedJobs": uploadedJobs,
+      });
+    }
+
+    /// 3️⃣ Update Company.terminatedJobs
+    List terminatedJobs =
+        List.from(companySnapshot.data()!['terminatedJobs'] ?? []);
+
+    final tindex =
+        terminatedJobs.indexWhere((job) => job['jobId'] == widget.job.jobId);
+
+    if (tindex != -1) {
+      List applications =
+          List.from(terminatedJobs[tindex]['applications'] ?? []);
+
+      if (!applications.contains(uid)) {
+        applications.add(uid);
+      }
+
+      terminatedJobs[tindex]['applications'] = applications;
+
+      batch.update(companyDoc, {
+        "terminatedJobs": terminatedJobs,
+      });
+    }
+
+    await batch.commit();
+
+    if (!mounted) return;
+
+    showSnakBar(context, Colors.green, "Applied Successfully");
+
+    setState(() {
+      isLoading = false;
     });
   }
-
-  await batch.commit();
-
-  if (!mounted) return;
-
-  showSnakBar(context, Colors.green, "Applied Successfully");
-
-  setState(() {
-    isLoading = false;
-  });
-}
-
-
 }

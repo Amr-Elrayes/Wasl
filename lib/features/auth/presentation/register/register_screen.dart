@@ -34,11 +34,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: GestureDetector(
-          onTap: () {
-            pop(context);
-          },
-        ),
+        title: const SizedBox(),
         centerTitle: false,
       ),
       body: SingleChildScrollView(child: _buildregsterbody(context)),
