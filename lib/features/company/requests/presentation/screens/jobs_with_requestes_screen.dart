@@ -49,40 +49,40 @@ class JobsWithRequestesScreen extends StatelessWidget {
                 }
 
                 if (!snapshot.hasData || !snapshot.data!.exists) {
-                  return  Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Lottie.asset(AppImages.noData, width: 160, height: 160),
-                  Text(
-                    "No Company Data",
-                    style: TextStyles.textSize15,
-                  )
-                ],
-              ),
-            );
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Lottie.asset(AppImages.noData, width: 160, height: 160),
+                        Text(
+                          "No Company Data",
+                          style: TextStyles.textSize15,
+                        )
+                      ],
+                    ),
+                  );
                 }
 
                 final data = snapshot.data!.data() as Map<String, dynamic>;
 
-                final activeJobsJson = List.from(data['activeJobs'] ?? []);
+                final uploadedJobsJson = List.from(data['uploadedJobs'] ?? []);
 
-                if (activeJobsJson.isEmpty) {
-                  return  Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Lottie.asset(AppImages.noData, width: 160, height: 160),
-                  Text(
-                    "No Active Jobs",
-                    style: TextStyles.textSize15,
-                  )
-                ],
-              ),
-            );
+                if (uploadedJobsJson.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Lottie.asset(AppImages.noData, width: 160, height: 160),
+                        Text(
+                          "No Active Jobs",
+                          style: TextStyles.textSize15,
+                        )
+                      ],
+                    ),
+                  );
                 }
 
-                final jobs = activeJobsJson
+                final jobs = uploadedJobsJson
                     .map((job) => JobModel.fromJson(job))
                     .where((job) => (job.applications ?? []).isNotEmpty)
                     .toList();
