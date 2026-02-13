@@ -49,7 +49,18 @@ class JobsWithRequestesScreen extends StatelessWidget {
                 }
 
                 if (!snapshot.hasData || !snapshot.data!.exists) {
-                  return const Center(child: Text("No Company Data Found"));
+                  return  Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Lottie.asset(AppImages.noData, width: 160, height: 160),
+                  Text(
+                    "No Company Data",
+                    style: TextStyles.textSize15,
+                  )
+                ],
+              ),
+            );
                 }
 
                 final data = snapshot.data!.data() as Map<String, dynamic>;
@@ -57,7 +68,18 @@ class JobsWithRequestesScreen extends StatelessWidget {
                 final activeJobsJson = List.from(data['activeJobs'] ?? []);
 
                 if (activeJobsJson.isEmpty) {
-                  return const Center(child: Text("No Active Jobs"));
+                  return  Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Lottie.asset(AppImages.noData, width: 160, height: 160),
+                  Text(
+                    "No Active Jobs",
+                    style: TextStyles.textSize15,
+                  )
+                ],
+              ),
+            );
                 }
 
                 final jobs = activeJobsJson

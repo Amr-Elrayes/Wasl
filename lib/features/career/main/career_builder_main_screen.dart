@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:wasl/core/constants/app_icons.dart';
@@ -24,10 +25,12 @@ class _CareerBuilderMainScreenState extends State<CareerBuilderMainScreen> {
   void initState() {
     super.initState();
     currentIndex = widget.initialIndex;
-
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
     screens = [
       HomeScreen(),
-      const AppliedSavedJobsScreen(),
+      AppliedSavedJobsScreen(
+        userId: currentUserId,
+      ),
       const ProfileScreen(
         canEdit: true,
       ),

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
 import 'package:wasl/components/cards/job_card.dart';
 import 'package:wasl/core/constants/app_images.dart';
@@ -58,8 +59,9 @@ class JobsInTitleScreen extends StatelessWidget {
     }
 
     return ListView.separated(
-      separatorBuilder: (_, __) =>
-          const Divider(color: AppColors.grayColor),
+      separatorBuilder: (context, index) {
+                      return const Gap(20);
+                    },
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: snapshot.data!.docs.length,

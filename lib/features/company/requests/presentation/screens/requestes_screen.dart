@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:async/async.dart';
+import 'package:lottie/lottie.dart';
 import 'package:wasl/components/cards/emplpyee_card.dart';
+import 'package:wasl/core/constants/app_images.dart';
 import 'package:wasl/core/routes/navigation.dart';
 import 'package:wasl/core/utils/colors.dart';
 import 'package:wasl/core/utils/text_styles.dart';
@@ -18,8 +20,19 @@ class RequestesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (applicationsIds.isEmpty) {
-      return const Scaffold(
-        body: Center(child: Text("No Applications Yet")),
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Lottie.asset(AppImages.noData, width: 160, height: 160),
+              Text(
+                "No Applications yet",
+                style: TextStyles.textSize15,
+              )
+            ],
+          ),
+        ),
       );
     }
 
@@ -46,7 +59,18 @@ class RequestesScreen extends StatelessWidget {
           }
 
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text("No Applications Found"));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Lottie.asset(AppImages.noData, width: 160, height: 160),
+                  Text(
+                    "No Apllications Found",
+                    style: TextStyles.textSize15,
+                  )
+                ],
+              ),
+            );
           }
 
           final employees = snapshot.data!;
