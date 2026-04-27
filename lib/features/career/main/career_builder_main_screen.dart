@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:wasl/core/constants/app_icons.dart';
 import 'package:wasl/core/utils/colors.dart';
+import 'package:wasl/features/career/ai_features/presentation/screens/ai_features_screen.dart';
 import 'package:wasl/features/career/applied_saved_jobs/presentation/screens/applied_saved_jobs_screen.dart';
 import 'package:wasl/features/career/home/presentation/screens/home_screen.dart';
 import 'package:wasl/features/career/profile/presentation/screens/profile_screen.dart';
@@ -28,6 +29,7 @@ class _CareerBuilderMainScreenState extends State<CareerBuilderMainScreen> {
     final currentUserId = FirebaseAuth.instance.currentUser!.uid;
     screens = [
       HomeScreen(),
+      AiFeaturesScreen(),
       AppliedSavedJobsScreen(
         userId: currentUserId,
       ),
@@ -73,7 +75,7 @@ class _CareerBuilderMainScreenState extends State<CareerBuilderMainScreen> {
             ),
             BottomNavigationBarItem(
               icon: SvgPicture.asset(
-                AppIcons.requestSvg,
+                AppIcons.cvSvg,
                 colorFilter: ColorFilter.mode(
                   currentIndex == 1
                       ? AppColors.primaryColor
@@ -85,9 +87,21 @@ class _CareerBuilderMainScreenState extends State<CareerBuilderMainScreen> {
             ),
             BottomNavigationBarItem(
               icon: SvgPicture.asset(
-                AppIcons.profileSvg,
+                AppIcons.requestSvg,
                 colorFilter: ColorFilter.mode(
                   currentIndex == 2
+                      ? AppColors.primaryColor
+                      : AppColors.darkColor,
+                  BlendMode.srcIn,
+                ),
+              ),
+              label: "",
+            ),
+            BottomNavigationBarItem(
+              icon: SvgPicture.asset(
+                AppIcons.profileSvg,
+                colorFilter: ColorFilter.mode(
+                  currentIndex == 3
                       ? AppColors.primaryColor
                       : AppColors.darkColor,
                   BlendMode.srcIn,

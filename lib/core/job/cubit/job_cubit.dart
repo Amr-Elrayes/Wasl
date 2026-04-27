@@ -140,7 +140,7 @@ class JobCubit extends Cubit<JobState> {
 
       _currentJobs = jobs;
 
-      emit(JobListLoadedState(jobs));
+      emit(JobListLoadedState(jobs)); 
     });
   }
 

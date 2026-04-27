@@ -7,4 +7,5 @@ class AppIcons {
   static const String searchSvg = "assets/icons/search.svg";
   static const String requestSvg = "assets/icons/request.svg";
   static const String addSvg = "assets/icons/add.svg";
+  static const String cvSvg = "assets/icons/cv.svg";
 }
