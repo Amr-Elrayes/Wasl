@@ -19,8 +19,24 @@ class _FileUploadFieldState extends State<FileUploadField> {
     );
 
     if (result != null && result.files.isNotEmpty) {
+      final file = result.files.first;
+      final ext = file.extension?.toLowerCase() ?? '';
+
+      if (ext != 'pdf' && ext != 'docx') {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Only PDF or DOCX files are allowed'),
+              backgroundColor: Color(0xFFEF4444),
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+        return;
+      }
+
       setState(() {
-        _selectedFile = result.files.first;
+        _selectedFile = file;
       });
     }
   }
@@ -100,7 +116,7 @@ class _FileUploadFieldState extends State<FileUploadField> {
             ),
             const SizedBox(height: 4),
             Text(
-              'PDF or DOCX supported',
+              'PDF or DOCX only',
               style: TextStyle(fontSize: 12, color: Colors.grey.shade400),
             ),
           ],
@@ -116,47 +132,44 @@ class _FileUploadFieldState extends State<FileUploadField> {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        GestureDetector(
-          onTap: _pickFile,
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              _buildFileIcon(extension),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      file.name,
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF111827)),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      _formatFileSize(file.size),
+                      style: const TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: Row(
-              children: [
-                _buildFileIcon(extension),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        file.name,
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF111827)),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        _formatFileSize(file.size),
-                        style: const TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
         Positioned(
