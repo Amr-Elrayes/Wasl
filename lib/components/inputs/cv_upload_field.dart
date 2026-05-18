@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wasl/core/functions/file_functions.dart';
+import 'package:wasl/features/career/ai_features/presentation/cubit/ai_cubit.dart';
 import 'package:wasl/features/career/ai_features/presentation/widgets/cv_switch_section.dart';
 
 class FileUploadField extends StatefulWidget {
@@ -19,11 +21,17 @@ class _FileUploadFieldState extends State<FileUploadField> {
     if (file != null) {
       setState(() => _selectedFile = file);
       _switchKey.currentState?.reset();
+      // ← شغّل الـ AiCubit
+      if (context.mounted) {
+        context.read<AiCubit>().analyzeCV(file);
+      }
     }
   }
 
   void _removeFile() {
     setState(() => _selectedFile = null);
+    // ← reset الـ AiCubit
+    context.read<AiCubit>().reset();
   }
 
   @override

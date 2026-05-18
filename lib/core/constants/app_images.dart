@@ -6,4 +6,5 @@ class AppImages {
   static const String on3 = "assets/images/security.png";
   static const String person = "assets/images/person.png";
   static const String noData = "assets/images/nodata.json";
+  static const String error = "assets/images/error.json";
 }

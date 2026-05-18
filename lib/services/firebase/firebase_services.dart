@@ -17,6 +17,26 @@ static Stream<QuerySnapshot> filterJobsByTitle(String title) {
       .snapshots();
 }
 
+static Future<List<Map<String, dynamic>>> getJobsForMatching() async {
+  final snapshot = await _jobsCollection
+      .where('status', isEqualTo: 'Active')
+      .get();
+
+  return snapshot.docs.map((doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    final List<dynamic> reqSkillsRaw = data['reqSkills'] ?? [];
+    final List<String> skills = reqSkillsRaw
+        .map((s) => s['name'].toString())
+        .toList();
+
+    return {
+      'jobId': doc.id,
+      'title': data['title'] ?? '',
+      'description': data['description'] ?? '',
+      'skills': skills,
+    };
+  }).toList();
+}
 
   static Future<QuerySnapshot> filterEmployeesByIndustry(
     String field,
