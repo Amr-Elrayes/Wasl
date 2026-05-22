@@ -53,7 +53,7 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 const Gap(15),
                 customButtom(
-                  txt: "Sign Up",
+                  txt: "Register",
                   onPressed: () {
                     pushAndRemoveUntil(context, Routes.register);
                   },
