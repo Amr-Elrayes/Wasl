@@ -34,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
       return;
     }
 
-    final bool isCompany = user.photoURL == "Company";
+    final bool isCompany = user.photoURL == "https://Company";
     final String collection = isCompany ? "Company" : "Career";
 
     final doc = await FirebaseFirestore.instance

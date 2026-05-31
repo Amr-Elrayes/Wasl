@@ -30,7 +30,7 @@ static Future<List<Map<String, dynamic>>> getJobsForMatching() async {
         .toList();
 
     return {
-      'jobId': doc.id,
+      'id': doc.id,
       'title': data['title'] ?? '',
       'description': data['description'] ?? '',
       'skills': skills,

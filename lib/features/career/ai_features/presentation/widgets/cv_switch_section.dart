@@ -25,7 +25,6 @@ class CvSwitchSectionState extends State<CvSwitchSection> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // الزرارين
         Row(
           children: [
             Expanded(
@@ -106,7 +105,6 @@ class CvSwitchSectionState extends State<CvSwitchSection> {
         ),
         const SizedBox(height: 20),
 
-        // المحتوى
         BlocBuilder<AiCubit, AiState>(
           builder: (context, state) {
             if (state is AiLoading) {

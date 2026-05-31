@@ -19,7 +19,7 @@ mixin AuthOperationsMixin on Cubit<AuthState>, AuthFormMixin {
       );
       User? user = credential.user;
       await user?.updateDisplayName(nameController.text);
-      user?.updatePhotoURL(type == usertype.Company ? "Company" : "Career");
+      await user?.updatePhotoURL(type == usertype.Company ? "https://Company" : "https://Career");
 
       if (type.toString().split('.').last == "Career") {
         var career = CareerBuilderModel(

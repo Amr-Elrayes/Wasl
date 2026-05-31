@@ -1,4 +1,5 @@
 import 'package:wasl/core/job/models/job_model.dart';
+import 'package:wasl/core/job/models/list_item_model.dart';
 
 class JobMatchModel {
   final JobModel job;
@@ -13,12 +14,22 @@ class JobMatchModel {
     required this.missingSkills,
   });
 
-  factory JobMatchModel.fromJson(Map<String, dynamic> json) {
-    return JobMatchModel(
-      job: JobModel.fromJson(json),
-      matchScore: json['matchScore'] ?? 0,
-      matchedSkills: List<String>.from(json['matchedSkills'] ?? []),
-      missingSkills: List<String>.from(json['missingSkills'] ?? []),
-    );
-  }
+factory JobMatchModel.fromJson(Map<String, dynamic> json) {
+  final jobData = json['job'] as Map<String, dynamic>;
+
+  return JobMatchModel(
+    job: JobModel(
+      jobId: jobData['id'] ?? '',
+      title: jobData['title'] ?? '',
+      description: jobData['description'] ?? '',
+      status: 'Active',
+      reqSkills: (jobData['skills'] as List<dynamic>? ?? [])
+          .map((s) => ListItemModel(name: s.toString()))
+          .toList(),
+    ),
+    matchScore: ((json['score'] as num? ?? 0) * 100).round(),
+    matchedSkills: List<String>.from(jobData['skills'] ?? []),
+    missingSkills: [],
+  );
+}
 }
