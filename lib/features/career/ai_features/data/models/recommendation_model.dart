@@ -1,19 +1,19 @@
-class FuturePlanModel {
+class RecommendationModel {
   final String candidateSummary;
   final List<CareerPathItem> careerPaths;
   final String generalAdvice;
 
-  FuturePlanModel({
+  RecommendationModel({
     required this.candidateSummary,
     required this.careerPaths,
     required this.generalAdvice,
   });
 
-  factory FuturePlanModel.fromJson(Map<String, dynamic> json) {
+  factory RecommendationModel.fromJson(Map<String, dynamic> json) {
     // 1. بنمسك كائن الـ recommendations الأول لو موجود، لو مش موجود بناخد الـ json الرئيسي كـ غطاء أمان
     final recommendations = json['recommendations'] as Map<String, dynamic>? ?? json;
 
-    return FuturePlanModel(
+    return RecommendationModel(
       // 2. بنقرأ البيانات من جوه الـ recommendations
       candidateSummary: recommendations['candidate_summary'] ?? '',
       generalAdvice: recommendations['general_advice'] ?? '',

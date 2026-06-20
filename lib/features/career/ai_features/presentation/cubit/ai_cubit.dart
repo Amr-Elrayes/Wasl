@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wasl/features/career/ai_features/data/models/future_plane_model.dart';
+import 'package:wasl/features/career/ai_features/data/models/recommendation_model.dart';
 import 'package:wasl/features/career/ai_features/data/models/job_matching_model.dart';
 import 'package:wasl/features/career/ai_features/data/repo/ai_repo.dart';
 import 'ai_state.dart';
@@ -22,11 +22,11 @@ class AiCubit extends Cubit<AiState> {
 
       emit(AiSuccess(
         matches: results[0] as List<JobMatchModel>,
-        futurePlan: results[1] as FuturePlanModel,
+        futurePlan: results[1] as RecommendationModel,
       ));
-} catch (e, stackTrace) {
+} catch (e) {
   if (e is DioException) {
-    print('TYPE: ${e.type}');
+    print('TYPE: ${e.type}'); 
     print('MESSAGE: ${e.message}');
     print('RESPONSE DATA: ${e.response?.data}');
     print('RESPONSE STATUS: ${e.response?.statusCode}');

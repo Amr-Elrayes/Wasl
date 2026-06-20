@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wasl/features/career/ai_features/data/models/future_plane_model.dart';
+import 'package:wasl/features/career/ai_features/data/models/recommendation_model.dart';
 
 class FuturePlanCard extends StatelessWidget {
   // تم تغيير النوع هنا ليستقبل العنصر الخاص بالمسار المهني الجديد

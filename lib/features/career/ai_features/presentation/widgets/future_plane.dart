@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wasl/components/cards/future_plane_card.dart';
-import 'package:wasl/features/career/ai_features/data/models/future_plane_model.dart';
+import 'package:wasl/features/career/ai_features/data/models/recommendation_model.dart';
 
 class FuturePlanWidget extends StatelessWidget {
-  final FuturePlanModel? futurePlan; // تعديل النوع إلى Object
+  final RecommendationModel? futurePlan; // تعديل النوع إلى Object
 
   const FuturePlanWidget({super.key, required this.futurePlan});
 

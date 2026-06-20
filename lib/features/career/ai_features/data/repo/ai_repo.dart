@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:wasl/features/career/ai_features/data/models/future_plane_model.dart';
+import 'package:wasl/features/career/ai_features/data/models/recommendation_model.dart';
 import 'package:wasl/features/career/ai_features/data/models/job_matching_model.dart';
 import 'package:wasl/services/firebase/firebase_services.dart';
 
@@ -30,7 +30,7 @@ Future<List<JobMatchModel>> getJobMatching(PlatformFile file) async {
   }
 }
 
-Future<FuturePlanModel> getFuturePlan(PlatformFile file) async {
+Future<RecommendationModel> getFuturePlan(PlatformFile file) async {
     final formData = FormData.fromMap({
       'file': file.bytes != null
           ? MultipartFile.fromBytes(file.bytes!, filename: file.name) 
@@ -44,7 +44,7 @@ Future<FuturePlanModel> getFuturePlan(PlatformFile file) async {
 
     if (response.statusCode == 200) {
       // نمرر الـ response.data بالكامل لأن الموديل مهيأ لاستقبال الـ Object الرئيسي
-      return FuturePlanModel.fromJson(response.data);
+      return RecommendationModel.fromJson(response.data);
     } else {
       throw Exception('Future plan failed');
     }
