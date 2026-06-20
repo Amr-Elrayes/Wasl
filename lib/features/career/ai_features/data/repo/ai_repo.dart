@@ -8,44 +8,43 @@ import 'package:wasl/services/firebase/firebase_services.dart';
 class AiRepo {
   final Dio _dio = Dio();
 
-  Future<List<JobMatchModel>> getJobMatching(PlatformFile file) async {
-    final jobs = await FirestoreServices.getJobsForMatching();
+Future<List<JobMatchModel>> getJobMatching(PlatformFile file) async {
+  final jobs = await FirestoreServices.getJobsForMatching();
+  final formData = FormData.fromMap({
+    'file': file.bytes != null
+        ? MultipartFile.fromBytes(file.bytes!, filename: file.name)
+        : await MultipartFile.fromFile(file.path!, filename: file.name),
+    'jobs_json': jsonEncode(jobs),
+  });
 
-    final formData = FormData.fromMap({
-      'cv_file': file.bytes != null
-          ? MultipartFile.fromBytes(file.bytes!, filename: file.name)
-          : await MultipartFile.fromFile(file.path!, filename: file.name),
-      'jobs': jsonEncode(jobs),
-    });
+  final response = await _dio.post(
+    'https://flamelike-piteously-chu.ngrok-free.dev/jobs/match-dynamic',
+    data: formData,
+  );
 
-    final response = await _dio.post(
-      'JOB_MATCHING_ENDPOINT',
-      data: formData,
-    );
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = response.data as List<dynamic>;
-      return data.map((e) => JobMatchModel.fromJson(e)).toList();
-    } else {
-      throw Exception('Job matching failed');
-    }
+  if (response.statusCode == 200) {
+    final List<dynamic> data = response.data['matches'];
+    return data.map((e) => JobMatchModel.fromJson(e)).toList();
+  } else {
+    throw Exception('Job matching failed');
   }
+}
 
-  Future<List<FuturePlanModel>> getFuturePlan(PlatformFile file) async {
+Future<FuturePlanModel> getFuturePlan(PlatformFile file) async {
     final formData = FormData.fromMap({
-      'cv_file': file.bytes != null
-          ? MultipartFile.fromBytes(file.bytes!, filename: file.name)
+      'file': file.bytes != null
+          ? MultipartFile.fromBytes(file.bytes!, filename: file.name) 
           : await MultipartFile.fromFile(file.path!, filename: file.name),
     });
 
     final response = await _dio.post(
-      'FUTURE_PLAN_ENDPOINT',
+      'https://flamelike-piteously-chu.ngrok-free.dev/career/recommend',
       data: formData,
     );
 
     if (response.statusCode == 200) {
-      final List<dynamic> data = response.data['future_plan'];
-      return data.map((e) => FuturePlanModel.fromJson(e)).toList();
+      // نمرر الـ response.data بالكامل لأن الموديل مهيأ لاستقبال الـ Object الرئيسي
+      return FuturePlanModel.fromJson(response.data);
     } else {
       throw Exception('Future plan failed');
     }

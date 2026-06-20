@@ -23,18 +23,7 @@ static Future<List<Map<String, dynamic>>> getJobsForMatching() async {
       .get();
 
   return snapshot.docs.map((doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    final List<dynamic> reqSkillsRaw = data['reqSkills'] ?? [];
-    final List<String> skills = reqSkillsRaw
-        .map((s) => s['name'].toString())
-        .toList();
-
-    return {
-      'id': doc.id,
-      'title': data['title'] ?? '',
-      'description': data['description'] ?? '',
-      'skills': skills,
-    };
+    return doc.data() as Map<String, dynamic>;
   }).toList();
 }
 

@@ -13,7 +13,7 @@ class JobModel {
   final String status;
   final String? requirments;
   final List<ListItemModel>? reqSkills;
-  final List<String>? applications;
+  final List<dynamic>? applications;
 
   JobModel({
     required this.jobId,

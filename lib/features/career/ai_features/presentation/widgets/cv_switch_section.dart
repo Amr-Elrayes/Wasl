@@ -26,6 +26,7 @@ class CvSwitchSectionState extends State<CvSwitchSection> {
     return Column(
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
               child: GestureDetector(
@@ -87,7 +88,7 @@ class CvSwitchSectionState extends State<CvSwitchSection> {
                           size: 18),
                       const SizedBox(width: 8),
                       Text(
-                        'Future Plan',
+                        'Recommendations',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -104,7 +105,6 @@ class CvSwitchSectionState extends State<CvSwitchSection> {
           ],
         ),
         const SizedBox(height: 20),
-
         BlocBuilder<AiCubit, AiState>(
           builder: (context, state) {
             if (state is AiLoading) {

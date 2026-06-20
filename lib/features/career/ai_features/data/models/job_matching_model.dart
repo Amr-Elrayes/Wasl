@@ -26,6 +26,14 @@ factory JobMatchModel.fromJson(Map<String, dynamic> json) {
       reqSkills: (jobData['skills'] as List<dynamic>? ?? [])
           .map((s) => ListItemModel(name: s.toString()))
           .toList(),
+      location: jobData["location"],
+      applications: jobData["applications"],
+      company: jobData["company"],
+      companyId: jobData["companyId"],
+      companyImg: jobData["companyImg"],
+      requirments: jobData["requirments"],
+      salary: (jobData["salary"] as num?)?.toDouble(),  // ← التعديل هنا
+      type: jobData["type"],
     ),
     matchScore: ((json['score'] as num? ?? 0) * 100).round(),
     matchedSkills: List<String>.from(jobData['skills'] ?? []),

@@ -9,11 +9,11 @@ class AiLoading extends AiState {}
 
 class AiSuccess extends AiState {
   final List<JobMatchModel> matches;
-  final List<FuturePlanModel> futurePlan;
+  final FuturePlanModel? futurePlan; // تم تعديلها لتستقبل الكائن الرئيسي مباشرة
 
   AiSuccess({
     required this.matches,
-    required this.futurePlan,
+    this.futurePlan,
   });
 }
 
